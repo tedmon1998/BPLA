@@ -1,0 +1,29 @@
+.wrapper {
+  background: #0e162b;
+  border: 1px solid #263764;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.description {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: #b4c3eb;
+}
+
+.badges {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.84rem;
+  color: #d5e1ff;
+}

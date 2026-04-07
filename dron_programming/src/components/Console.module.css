@@ -1,0 +1,30 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 180px;
+  background: #0e162b;
+  border: 1px solid #263764;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.wrapper h3 {
+  margin: 0 0 8px;
+}
+
+.logBox {
+  overflow: auto;
+  background: #03081a;
+  border: 1px solid #2f426e;
+  border-radius: 8px;
+  padding: 8px;
+  flex: 1;
+}
+
+.logLine {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.84rem;
+  color: #c5d1f7;
+  margin-bottom: 4px;
+  white-space: pre-wrap;
+}

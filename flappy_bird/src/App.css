@@ -1,0 +1,243 @@
+.page {
+  width: min(920px, 95vw);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0 30px;
+}
+
+h1 {
+  margin: 4px 0;
+  color: #f5f9ff;
+  font-size: 36px;
+}
+
+.subtitle {
+  margin: 0 0 16px;
+  color: #cde1ff;
+}
+
+.game {
+  position: relative;
+  width: 860px;
+  max-width: 100%;
+  height: 560px;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 2px solid #164672;
+  background: linear-gradient(#77c0ff, #9ddbff 35%, #7bc969 35%);
+  box-shadow: 0 16px 30px rgb(0 0 0 / 25%);
+  user-select: none;
+  cursor: pointer;
+}
+
+.activation-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgb(4 15 29 / 85%);
+  color: #f4f7ff;
+  text-align: center;
+  padding: 20px;
+}
+
+.activation-overlay input {
+  width: min(320px, 90%);
+  border-radius: 10px;
+  border: 1px solid #77a7d3;
+  background: #0f2d49;
+  color: #dff0ff;
+  padding: 10px 12px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.activation-overlay button {
+  border: none;
+  border-radius: 10px;
+  background: #f39a29;
+  color: #172030;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.activation-error {
+  color: #ffb5b5;
+}
+
+.skyline {
+  position: absolute;
+  inset: 35% 0 auto;
+  height: 8px;
+  background: rgb(255 255 255 / 60%);
+}
+
+.drone {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  font-size: 34px;
+  transition: transform 0.06s linear;
+}
+
+.drone-icon {
+  width: 36px;
+  height: 36px;
+  color: #0d2a45;
+  filter: drop-shadow(0 1px 1px rgb(255 255 255 / 50%));
+}
+
+.building {
+  position: absolute;
+  z-index: 2;
+  background: linear-gradient(90deg, #4f5863, #727f8e 30%, #4f5863);
+  border-left: 3px solid #313943;
+  border-right: 3px solid #313943;
+}
+
+.building::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+      0deg,
+      transparent 78%,
+      rgb(250 235 100 / 22%) 78%,
+      rgb(250 235 100 / 22%) 86%,
+      transparent 86%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 9px,
+      rgb(255 245 150 / 38%) 9px 13px
+    );
+}
+
+.hud {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  color: #0d2a45;
+  z-index: 4;
+}
+
+.status {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  background: rgb(11 48 80 / 82%);
+  color: #dceefe;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 14px;
+  z-index: 4;
+}
+
+.hero {
+  position: absolute;
+  right: 42px;
+  bottom: 36px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-avatar {
+  font-size: 42px;
+}
+
+.hero-food {
+  font-size: 30px;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  color: #f4f7ff;
+  background: rgb(3 15 29 / 72%);
+}
+
+.overlay h2 {
+  margin: 0;
+  color: #ffffff;
+}
+
+.overlay p {
+  margin: 0;
+}
+
+.overlay code {
+  font-size: 28px;
+  background: #0e3c66;
+  border: 1px solid #7ec6ff;
+  color: #e5f4ff;
+  border-radius: 10px;
+  padding: 8px 14px;
+}
+
+.overlay button {
+  margin-top: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #f39a29;
+  color: #172030;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.controls {
+  margin: 12px 0 0;
+  color: #d0e5ff;
+}
+
+.actions {
+  margin-top: 12px;
+}
+
+.finish-btn {
+  border: none;
+  border-radius: 10px;
+  background: #e86666;
+  color: #fff8f8;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.finish-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.game-over {
+  filter: saturate(0.8);
+}
+
+.delivered {
+  box-shadow: 0 0 0 3px #f6cc66, 0 16px 30px rgb(0 0 0 / 25%);
+}

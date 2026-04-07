@@ -1,0 +1,260 @@
+.page {
+  min-height: 100vh;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.header h1 {
+  margin: 0 0 10px;
+  font-size: 32px;
+  color: #0f172a;
+}
+
+.header p {
+  margin: 0;
+  color: #334155;
+}
+
+.meta {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #e2e8f0;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pillButton {
+  border: 1px solid #94a3b8;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #f8fafc;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+.pillButton.danger {
+  border-color: #ef4444;
+  color: #b91c1c;
+}
+
+.grid {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.card {
+  all: unset;
+  cursor: pointer;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+}
+
+.card:disabled {
+  opacity: 0.78;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.card:focus-visible {
+  outline: 2px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.card span {
+  font: 600 11px/1.2 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #0f172a;
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 20;
+}
+
+.modal {
+  width: min(560px, 100%);
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 24px 36px rgba(15, 23, 42, 0.25);
+}
+
+.modal h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.modal p {
+  margin: 0 0 12px;
+  color: #334155;
+}
+
+.quizRows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quizRow {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.quizRow span {
+  font-weight: 700;
+}
+
+.quizRow select {
+  border: 1px solid #94a3b8;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.modalActions {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modalActions.center {
+  justify-content: center;
+}
+
+.modalActions button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: #1d4ed8;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.resultModal {
+  text-align: center;
+}
+
+.activationModal {
+  text-align: left;
+}
+
+.activationModal code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: #e2e8f0;
+  color: #0f172a;
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.activationRow {
+  display: flex;
+  gap: 8px;
+}
+
+.activationRow input {
+  flex: 1;
+  border: 1px solid #94a3b8;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.activationRow button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: #1d4ed8;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.resultModal code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: #e2e8f0;
+  color: #0f172a;
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.countdownText {
+  margin-top: 8px;
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+.toast {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: #1e293b;
+  font-weight: 600;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.28);
+}
+
+.toast.success {
+  background: #166534;
+}
+
+@media (max-width: 560px) {
+  .page {
+    padding: 10px;
+  }
+
+  .quizRow {
+    grid-template-columns: 1fr;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+
+  .activationRow {
+    flex-direction: column;
+  }
+}

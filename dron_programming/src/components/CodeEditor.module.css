@@ -1,0 +1,49 @@
+.wrapper {
+  background: #0e162b;
+  border: 1px solid #263764;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.wrapper h3 {
+  margin: 0 0 8px;
+}
+
+.editor {
+  width: 100%;
+  min-height: 220px;
+  resize: vertical;
+  box-sizing: border-box;
+  background: #020616;
+  color: #e2e8ff;
+  border: 1px solid #2f426e;
+  border-radius: 8px;
+  padding: 10px;
+  font-family: Consolas, 'Courier New', monospace;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.controls button {
+  border: 1px solid #3e5ca1;
+  background: #1b2d52;
+  color: #f2f6ff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.controls button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hint {
+  font-size: 0.85rem;
+  margin-top: 10px;
+  color: #afbfec;
+}
