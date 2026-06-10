@@ -1,0 +1,3226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Марафон Хакатонов</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Syncopate:wght@400&display=swap" rel="stylesheet">
+    <style>
+/* Fonts - остаются глобальными, так как используются по имени */
+@font-face {
+    font-family: 'Polonium';
+    src: url('fonts/Polonium-Bold.woff2') format('woff2'),
+         url('fonts/Polonium-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Все стили обернуты в .dynamic-content-container для изоляции от глобальных стилей приложения */
+/* Это предотвращает конфликты стилей между динамическим контентом и основным приложением */
+/* Используем !important для критических свойств, чтобы гарантировать приоритет над глобальными стилями */
+
+/* Reset and Base Styles - применяются только внутри контейнера */
+.dynamic-content-container * {
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Явные цвета для всех элементов, чтобы глобальные стили не перебивали */
+.dynamic-content-container p,
+.dynamic-content-container span,
+.dynamic-content-container div,
+.dynamic-content-container h1,
+.dynamic-content-container h2,
+.dynamic-content-container h3,
+.dynamic-content-container h4,
+.dynamic-content-container h5,
+.dynamic-content-container h6,
+.dynamic-content-container a,
+.dynamic-content-container li,
+.dynamic-content-container ul,
+.dynamic-content-container ol,
+.dynamic-content-container td,
+.dynamic-content-container th,
+.dynamic-content-container label,
+.dynamic-content-container button,
+.dynamic-content-container input,
+.dynamic-content-container textarea,
+.dynamic-content-container select,
+.dynamic-content-container strong,
+.dynamic-content-container b,
+.dynamic-content-container em,
+.dynamic-content-container i,
+.dynamic-content-container small,
+.dynamic-content-container code,
+.dynamic-content-container pre {
+    color: var(--text-white) !important;
+}
+
+/* Универсальный селектор для всех элементов внутри контейнера с максимальной специфичностью */
+.dynamic-content-container * {
+    color: var(--text-white) !important;
+}
+
+/* CSS переменные изолированы в контейнере */
+.dynamic-content-container {
+    --page-bg: #000000;
+    --primary-dark: #060D20;
+    --bg-warm-wash: linear-gradient(
+        180deg,
+        rgba(246, 160, 0, 0.08) 0%,
+        transparent 44%,
+        rgba(246, 160, 0, 0.05) 100%
+    );
+    --primary-purple: #F6A000;
+    --accent-green: #F6A000;
+    --text-white: #FFFFFF;
+    --text-gray: rgba(255, 255, 255, 0.78);
+    --card-bg: #060D20;
+    --card-border: #F6A000;
+}
+
+/* Стили body применяются к контейнеру с !important для защиты от глобальных стилей */
+.dynamic-content-container {
+    font-family: 'Orbitron', sans-serif !important;
+    background-color: var(--page-bg) !important;
+    background-image: var(--bg-warm-wash) !important;
+    color: var(--text-white) !important;
+    line-height: 1.6 !important;
+    overflow-x: hidden !important;
+    /* Блокируем применение глобальных стилей */
+    text-align: initial !important;
+    direction: ltr !important;
+    writing-mode: horizontal-tb !important;
+}
+
+.dynamic-content-container .container {
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 0 20px !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+}
+
+/* Hero Section */
+.dynamic-content-container .hero {
+    min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    overflow: hidden !important;
+    /* Блокируем глобальные стили */
+    background-color: transparent !important;
+    color: inherit !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+.dynamic-content-container .hero-background {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: var(--page-bg) !important;
+    background-image:
+        var(--bg-warm-wash),
+        radial-gradient(ellipse 90% 55% at 100% 0%, rgba(246, 160, 0, 0.18) 0%, transparent 52%),
+        radial-gradient(ellipse 75% 45% at 0% 100%, rgba(246, 160, 0, 0.14) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 35% at 50% 100%, rgba(246, 160, 0, 0.09) 0%, transparent 65%) !important;
+    z-index: 0 !important;
+    /* Блокируем глобальные стили */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    display: block !important;
+}
+
+.dynamic-content-container .hero-kandinsky {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+    /* Блокируем глобальные стили */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    display: block !important;
+    opacity: 0.3 !important;
+    background: transparent !important;
+}
+
+.dynamic-content-container .kandinsky-image {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 30% !important;
+    height: auto !important;
+    opacity: 0.8 !important;
+    pointer-events: none !important;
+    /* Блокируем глобальные стили */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    display: block !important;
+    max-width: none !important;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1) translateY(0);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.1) translateY(-20px);
+        opacity: 0.8;
+    }
+}
+
+.dynamic-content-container .hero .container {
+    position: relative !important;
+    z-index: 10 !important;
+    text-align: center !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin: 0 auto !important;
+    padding: 0 20px !important;
+    box-sizing: border-box !important;
+    max-width: 1200px !important;
+}
+
+.dynamic-content-container .main-title {
+    font-family: 'Polonium', 'Orbitron', sans-serif !important;
+    font-size: clamp(3rem, 10vw, 7rem) !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+    margin-bottom: 1.5rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    text-shadow: 0 0 28px rgba(246, 160, 0, 0.45) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    /* Блокируем глобальные стили */
+    color: var(--text-white) !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    text-align: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-inline: clamp(0.25rem, 2vw, 1rem) !important;
+    box-sizing: border-box !important;
+}
+
+.dynamic-content-container .title-line {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center !important;
+    font-size: clamp(2rem, 7.2vw, 6.5rem) !important;
+    /* Блокируем глобальные стили */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: inherit !important;
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+}
+
+.dynamic-content-container .title-left {
+    text-align: left !important;
+    margin-left: -8% !important;
+    /* Блокируем глобальные стили */
+    margin-top: 0 !important;
+    margin-right: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: inherit !important;
+}
+
+.dynamic-content-container .title-center {
+    text-align: center !important;
+    /* Блокируем глобальные стили */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: inherit !important;
+}
+
+.dynamic-content-container .title-right {
+    text-align: right !important;
+    margin-right: -10% !important;
+    /* Блокируем глобальные стили */
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: inherit !important;
+}
+
+.dynamic-content-container .year {
+    display: block !important;
+    font-family: 'Syncopate', 'Orbitron', sans-serif !important;
+    font-size: clamp(3rem, 8vw, 6rem) !important;
+    font-weight: 400 !important;
+    margin-top: 0.5rem !important;
+    /* Блокируем глобальные стили */
+    margin-bottom: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: inherit !important;
+}
+
+.dynamic-content-container .accent-zero {
+    color: transparent !important;
+    -webkit-text-stroke: 3px #F6A000 !important;
+    display: inline-block !important;
+    animation: glow 2s ease-in-out infinite !important;
+    /* Блокируем глобальные стили */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+@keyframes glow {
+    0%, 100% {
+        filter: drop-shadow(0 0 5px #F6A000);
+    }
+    50% {
+        filter: drop-shadow(0 0 20px #F6A000);
+    }
+}
+
+.dynamic-content-container .hero-subtitle {
+    font-size: clamp(1rem, 2vw, 1.5rem) !important;
+    color: var(--text-gray) !important;
+    margin-bottom: 3rem !important;
+    font-weight: 400 !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    text-align: center !important;
+}
+
+/* About Section */
+.dynamic-content-container .about {
+    padding: 100px 0 !important;
+    background: linear-gradient(180deg, var(--page-bg) 0%, rgba(246, 160, 0, 0.07) 50%, var(--page-bg) 100%) !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    position: relative !important;
+    margin: 0 !important;
+    border: none !important;
+    color: var(--text-white) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.dynamic-content-container .section-title {
+    font-size: clamp(2.5rem, 5vw, 4rem) !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    margin-bottom: 4rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    background: linear-gradient(135deg, var(--text-white) 0%, var(--primary-purple) 100%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    position: relative !important;
+    padding: 0 !important;
+    border: none !important;
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.dynamic-content-container .about-content {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+    gap: 2rem !important;
+    /* Блокируем глобальные стили */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.dynamic-content-container .about-card {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 20px !important;
+    padding: 2.5rem !important;
+    transition: all 0.3s ease !important;
+    backdrop-filter: blur(10px) !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    position: relative !important;
+    margin: 0 !important;
+    color: var(--text-white) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    text-align: left !important;
+    direction: ltr !important;
+}
+
+.dynamic-content-container .about-card:hover {
+    transform: translateY(-10px) !important;
+    border-color: var(--primary-purple) !important;
+    box-shadow: 0 20px 40px rgba(246, 160, 0, 0.2) !important;
+}
+
+.dynamic-content-container .about-card h3 {
+    font-size: 1.8rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 1rem !important;
+    color: var(--primary-purple) !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    text-align: left !important;
+}
+
+.dynamic-content-container .about-card p {
+    color: var(--text-gray) !important;
+    font-size: 1rem !important;
+    line-height: 1.8 !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin: 0 0 1rem 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    text-align: left !important;
+}
+
+/* Events Section */
+.dynamic-content-container .events {
+    padding: 100px 0 !important;
+    position: relative !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: var(--text-white) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.dynamic-content-container .events::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(246, 160, 0, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.dynamic-content-container .events-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+    gap: 2.5rem !important;
+    position: relative !important;
+    z-index: 1 !important;
+    /* Блокируем глобальные стили */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.dynamic-content-container .event-card {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 20px !important;
+    padding: 2.5rem !important;
+    transition: all 0.3s ease !important;
+    backdrop-filter: blur(10px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    /* Блокируем глобальные стили */
+    margin: 0 !important;
+    color: var(--text-white) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    text-align: left !important;
+    direction: ltr !important;
+}
+
+.dynamic-content-container .event-card:hover {
+    transform: translateY(-10px) !important;
+    border-color: var(--primary-purple) !important;
+    box-shadow: 0 20px 50px rgba(246, 160, 0, 0.3) !important;
+}
+
+.dynamic-content-container .event-header {
+    margin-bottom: 1.5rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    /* Блокируем глобальные стили */
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.dynamic-content-container .event-logo {
+    width: 80px !important;
+    height: 80px !important;
+    margin-bottom: 1rem !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(0, 0, 0, 0.45) !important;
+    border-radius: 15px !important;
+    border: 1px solid var(--card-border) !important;
+    transition: all 0.3s ease !important;
+    /* Блокируем глобальные стили */
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+}
+
+.dynamic-content-container .event-logo:hover {
+    background: rgba(0, 0, 0, 0.6) !important;
+    border-color: var(--primary-purple) !important;
+    transform: scale(1.05) !important;
+}
+
+.dynamic-content-container .event-logo-white {
+    background: #FFFFFF !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.dynamic-content-container .event-logo-white:hover {
+    background: #F5F5F5 !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.dynamic-content-container .logo-image {
+    max-width: 60px !important;
+    max-height: 60px !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    filter: brightness(1.1) contrast(1.1) !important;
+    transition: all 0.3s ease !important;
+    /* Блокируем глобальные стили */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    display: block !important;
+    box-sizing: border-box !important;
+}
+
+.dynamic-content-container .logo-image:hover {
+    filter: brightness(1.3) contrast(1.2) !important;
+}
+
+.dynamic-content-container .event-title {
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 0.5rem !important;
+    color: var(--text-white) !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    text-align: center !important;
+}
+
+.dynamic-content-container .event-tag {
+    display: inline-block !important;
+    padding: 0.3rem 1rem !important;
+    background: rgba(246, 160, 0, 0.2) !important;
+    color: var(--primary-purple) !important;
+    border-radius: 20px !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    /* Блокируем глобальные стили */
+    margin: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    text-decoration: none !important;
+}
+
+.dynamic-content-container .event-description {
+    color: var(--text-gray) !important;
+    font-size: 0.95rem !important;
+    line-height: 1.7 !important;
+    margin-bottom: 1.5rem !important;
+    flex-grow: 1 !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    text-align: left !important;
+}
+
+.dynamic-content-container .event-info {
+    margin-bottom: 2rem !important;
+    padding: 1.5rem !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    border-radius: 10px !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border: none !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    color: var(--text-white) !important;
+}
+
+.dynamic-content-container .info-item {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    margin-bottom: 0.8rem !important;
+    /* Блокируем глобальные стили */
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    align-items: center !important;
+}
+
+.dynamic-content-container .info-item:last-child {
+    margin-bottom: 0 !important;
+}
+
+.dynamic-content-container .info-label {
+    color: var(--text-gray) !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    /* Блокируем глобальные стили */
+    display: inline-block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    text-align: left !important;
+}
+
+.dynamic-content-container .info-value {
+    color: var(--text-white) !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    /* Блокируем глобальные стили */
+    display: inline-block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    text-align: right !important;
+}
+
+.dynamic-content-container .register-button {
+    width: 100% !important;
+    padding: 1rem 2rem !important;
+    background: var(--primary-dark) !important;
+    color: var(--text-white) !important;
+    border: 2px solid var(--card-border) !important;
+    border-radius: 50px !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    outline: none !important;
+}
+
+.dynamic-content-container .register-button:hover {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, #c67f00 100%) !important;
+    border-color: rgba(255, 255, 255, 1) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Partners Section */
+.dynamic-content-container .partners {
+    padding: 100px 0 !important;
+    background: linear-gradient(180deg, var(--page-bg) 0%, rgba(246, 160, 0, 0.06) 100%) !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    position: relative !important;
+    margin: 0 !important;
+    border: none !important;
+    color: var(--text-white) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.dynamic-content-container .partners-text {
+    text-align: center !important;
+    color: var(--text-gray) !important;
+    font-size: 1.2rem !important;
+    line-height: 1.8 !important;
+    max-width: 800px !important;
+    margin: 0 auto 3rem !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    box-sizing: border-box !important;
+}
+
+.dynamic-content-container .partner-button {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 1rem !important;
+    margin: 0 auto !important;
+    padding: 1.5rem 3rem !important;
+    background: var(--primary-dark) !important;
+    color: var(--text-white) !important;
+    border: 2px solid var(--card-border) !important;
+    border-radius: 50px !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 1.1rem !important;
+    font-weight: 400 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    /* Блокируем глобальные стили */
+    box-sizing: border-box !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    outline: none !important;
+    width: auto !important;
+}
+
+.dynamic-content-container .partner-button:hover {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, #c67f00 100%) !important;
+    border-color: rgba(255, 255, 255, 1) !important;
+    transform: translateY(-2px) !important;
+}
+
+.dynamic-content-container .button-icon {
+    font-size: 1.5rem !important;
+    /* Блокируем глобальные стили */
+    display: inline-block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: inherit !important;
+}
+
+/* Footer */
+.dynamic-content-container .footer {
+    padding: 60px 0 30px !important;
+    background: var(--bg-warm-wash), var(--page-bg) !important;
+    border-top: 1px solid var(--card-border) !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    position: relative !important;
+    margin: 0 !important;
+    color: var(--text-white) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+}
+
+.dynamic-content-container .footer-content {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+    gap: 3rem !important;
+    margin-bottom: 3rem !important;
+    /* Блокируем глобальные стили */
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.dynamic-content-container .footer-section h4 {
+    color: var(--primary-purple) !important;
+    font-size: 1.3rem !important;
+    margin-bottom: 1rem !important;
+    font-weight: 600 !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    text-align: left !important;
+}
+
+.dynamic-content-container .footer-section p {
+    color: var(--text-gray) !important;
+    margin-bottom: 0.5rem !important;
+    font-size: 0.95rem !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    text-align: left !important;
+}
+
+.dynamic-content-container .social-links {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 1rem !important;
+    /* Блокируем глобальные стили */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+}
+
+.dynamic-content-container .social-link {
+    color: var(--text-gray) !important;
+    text-decoration: none !important;
+    padding: 0.5rem 1rem !important;
+    background: rgba(246, 160, 0, 0.1) !important;
+    border-radius: 10px !important;
+    transition: all 0.3s ease !important;
+    font-size: 0.9rem !important;
+    /* Блокируем глобальные стили */
+    display: inline-block !important;
+    margin: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+}
+
+.dynamic-content-container .social-link:hover {
+    background: var(--primary-purple) !important;
+    color: var(--text-white) !important;
+    transform: translateY(-2px) !important;
+}
+
+.dynamic-content-container .footer-bottom {
+    text-align: center !important;
+    padding-top: 2rem !important;
+    border-top: 1px solid var(--card-border) !important;
+    color: var(--text-gray) !important;
+    font-size: 0.9rem !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin: 0 !important;
+    padding-bottom: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    background: transparent !important;
+    box-sizing: border-box !important;
+}
+
+/* Modal */
+.dynamic-content-container .modal {
+    display: none !important;
+    position: fixed !important;
+    z-index: 1000 !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: rgba(0, 0, 0, 0.88) !important;
+    backdrop-filter: blur(10px) !important;
+    animation: fadeIn 0.3s ease !important;
+    /* Блокируем глобальные стили */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    color: var(--text-white) !important;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.dynamic-content-container .modal-content {
+    background: var(--primary-dark) !important;
+    border: 2px solid var(--card-border) !important;
+    margin: 5% auto !important;
+    padding: 3rem !important;
+    border-radius: 20px !important;
+    width: 90% !important;
+    max-width: 600px !important;
+    position: relative !important;
+    animation: slideDown 0.3s ease !important;
+    box-shadow: 0 20px 60px rgba(246, 160, 0, 0.3) !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    box-sizing: border-box !important;
+    color: var(--text-white) !important;
+    text-align: left !important;
+    direction: ltr !important;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.dynamic-content-container .close-button {
+    position: absolute !important;
+    right: 2rem !important;
+    top: 2rem !important;
+    font-size: 2rem !important;
+    font-weight: bold !important;
+    color: var(--text-gray) !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    line-height: 1 !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+}
+
+.dynamic-content-container .close-button:hover {
+    color: var(--primary-purple) !important;
+    transform: rotate(90deg) !important;
+}
+
+.dynamic-content-container #modalTitle {
+    font-size: 2rem !important;
+    margin-bottom: 2rem !important;
+    color: var(--primary-purple) !important;
+    font-weight: 700 !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    text-align: left !important;
+}
+
+.dynamic-content-container .form-group {
+    margin-bottom: 1.5rem !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.dynamic-content-container .form-group label {
+    display: block !important;
+    margin-bottom: 0.5rem !important;
+    color: var(--text-white) !important;
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    /* Блокируем глобальные стили */
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    text-align: left !important;
+}
+
+.dynamic-content-container .form-group input,
+.dynamic-content-container .form-group select {
+    width: 100% !important;
+    padding: 1rem !important;
+    background: rgba(0, 0, 0, 0.45) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 10px !important;
+    color: var(--text-white) !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 1rem !important;
+    transition: all 0.3s ease !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    text-align: left !important;
+    direction: ltr !important;
+    outline: none !important;
+}
+
+.dynamic-content-container .form-group input:focus,
+.dynamic-content-container .form-group select:focus {
+    outline: none !important;
+    border-color: var(--primary-purple) !important;
+    box-shadow: 0 0 20px rgba(246, 160, 0, 0.2) !important;
+}
+
+.dynamic-content-container .form-group select {
+    cursor: pointer !important;
+}
+
+.dynamic-content-container .form-group select option {
+    background: var(--primary-dark) !important;
+    color: var(--text-white) !important;
+}
+
+.dynamic-content-container .submit-button {
+    width: 100% !important;
+    padding: 1.2rem 2rem !important;
+    background: var(--primary-dark) !important;
+    color: var(--text-white) !important;
+    border: 2px solid var(--card-border) !important;
+    border-radius: 50px !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 1.1rem !important;
+    font-weight: 400 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    margin-top: 1rem !important;
+    /* Блокируем глобальные стили */
+    display: block !important;
+    margin-bottom: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    outline: none !important;
+}
+
+.dynamic-content-container .submit-button:hover {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, #c67f00 100%) !important;
+    border-color: rgba(255, 255, 255, 1) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Responsive Design */
+/* Планшеты и небольшие экраны */
+@media (max-width: 1024px) {
+    .dynamic-content-container .container {
+        padding: 0 15px !important;
+        max-width: 100% !important;
+    }
+    
+    .dynamic-content-container .hero {
+        min-height: 80vh !important;
+    }
+    
+    .dynamic-content-container .about,
+    .dynamic-content-container .events,
+    .dynamic-content-container .partners {
+        padding: 60px 0 !important;
+    }
+    
+    .dynamic-content-container .section-title {
+        font-size: clamp(2rem, 4vw, 3rem) !important;
+        margin-bottom: 2.5rem !important;
+    }
+}
+
+/* Планшеты (портретная ориентация) */
+@media (max-width: 768px) {
+    .dynamic-content-container .kandinsky-image {
+        width: 50% !important;
+        opacity: 0.6 !important;
+    }
+    
+    .dynamic-content-container .hero {
+        min-height: 70vh !important;
+        padding: 2rem 0 !important;
+    }
+    
+    .dynamic-content-container .main-title {
+        font-size: clamp(2rem, 8vw, 3rem) !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .dynamic-content-container .title-line {
+        font-size: clamp(1.5rem, 6.6vw, 3.1rem) !important;
+    }
+    
+    .dynamic-content-container .title-left {
+        margin-left: -2% !important;
+        text-align: left !important;
+    }
+    
+    .dynamic-content-container .title-right {
+        margin-right: -5% !important;
+        text-align: right !important;
+    }
+    
+    .dynamic-content-container .year {
+        font-size: clamp(1.8rem, 6vw, 2.5rem) !important;
+    }
+    
+    .dynamic-content-container .hero-subtitle {
+        font-size: clamp(0.9rem, 2vw, 1.2rem) !important;
+        margin-bottom: 2rem !important;
+    }
+    
+    .dynamic-content-container .about,
+    .dynamic-content-container .events,
+    .dynamic-content-container .partners {
+        padding: 50px 0 !important;
+    }
+    
+    .dynamic-content-container .section-title {
+        font-size: clamp(1.8rem, 5vw, 2.5rem) !important;
+        margin-bottom: 2rem !important;
+    }
+    
+    .dynamic-content-container .about-content,
+    .dynamic-content-container .events-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+    
+    .dynamic-content-container #timeline .about-content {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .dynamic-content-container .about-card {
+        padding: 2rem !important;
+    }
+    
+    .dynamic-content-container .about-card h3 {
+        font-size: 1.5rem !important;
+    }
+    
+    .dynamic-content-container .about-card p {
+        font-size: 0.95rem !important;
+    }
+    
+    .dynamic-content-container .event-logo {
+        width: 70px !important;
+        height: 70px !important;
+    }
+    
+    .dynamic-content-container .logo-image {
+        max-width: 50px !important;
+        max-height: 50px !important;
+    }
+    
+    .dynamic-content-container .event-title {
+        font-size: 1.5rem !important;
+    }
+    
+    .dynamic-content-container .event-description {
+        font-size: 0.9rem !important;
+    }
+    
+    .dynamic-content-container .event-info {
+        padding: 1rem !important;
+    }
+    
+    .dynamic-content-container .register-button,
+    .dynamic-content-container .partner-button {
+        padding: 0.9rem 1.5rem !important;
+        font-size: 0.95rem !important;
+    }
+    
+    .dynamic-content-container .partners-text {
+        font-size: 1rem !important;
+        margin-bottom: 2rem !important;
+    }
+    
+    .dynamic-content-container .footer {
+        padding: 40px 0 20px !important;
+    }
+    
+    .dynamic-content-container .footer-content {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+    }
+    
+    .dynamic-content-container .footer-section h4 {
+        font-size: 1.1rem !important;
+    }
+    
+    .dynamic-content-container .footer-section p {
+        font-size: 0.85rem !important;
+    }
+    
+    .dynamic-content-container .social-links {
+        flex-wrap: wrap !important;
+        gap: 0.8rem !important;
+    }
+    
+    .dynamic-content-container .social-link {
+        padding: 0.4rem 0.8rem !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .dynamic-content-container .modal-content {
+        margin: 5% auto !important;
+        padding: 2rem !important;
+        width: 95% !important;
+        max-width: 100% !important;
+    }
+    
+    .dynamic-content-container .close-button {
+        right: 1rem !important;
+        top: 1rem !important;
+        font-size: 1.5rem !important;
+    }
+    
+    .dynamic-content-container #modalTitle {
+        font-size: 1.5rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .dynamic-content-container .form-group {
+        margin-bottom: 1.2rem !important;
+    }
+    
+    .dynamic-content-container .form-group label {
+        font-size: 0.9rem !important;
+    }
+    
+    .dynamic-content-container .form-group input,
+    .dynamic-content-container .form-group select {
+        padding: 0.8rem !important;
+        font-size: 0.95rem !important;
+    }
+    
+    .dynamic-content-container .submit-button {
+        padding: 1rem 1.5rem !important;
+        font-size: 1rem !important;
+    }
+    
+    .dynamic-content-container .events::before {
+        width: 400px !important;
+        height: 400px !important;
+    }
+}
+
+/* Мобильные устройства */
+@media (max-width: 480px) {
+    .dynamic-content-container .container {
+        padding: 0 10px !important;
+    }
+    
+    .dynamic-content-container .kandinsky-image {
+        width: 70% !important;
+        opacity: 0.5 !important;
+    }
+    
+    .dynamic-content-container .hero {
+        min-height: 60vh !important;
+        padding: 1.5rem 0 !important;
+    }
+    
+    .dynamic-content-container .main-title {
+        font-size: clamp(1.5rem, 7vw, 2.5rem) !important;
+        gap: 0.3rem !important;
+    }
+    
+    .dynamic-content-container .title-line {
+        width: 100% !important;
+        font-size: clamp(1.1rem, 7.8vw, 2.1rem) !important;
+    }
+    
+    .dynamic-content-container .title-left {
+        margin-left: 0 !important;
+        text-align: center !important;
+    }
+    
+    .dynamic-content-container .title-center {
+        text-align: center !important;
+    }
+    
+    .dynamic-content-container .title-right {
+        margin-right: 0 !important;
+        text-align: center !important;
+    }
+    
+    .dynamic-content-container .year {
+        font-size: clamp(1.5rem, 5vw, 2rem) !important;
+        margin-top: 0.3rem !important;
+    }
+    
+    .dynamic-content-container .accent-zero {
+        -webkit-text-stroke: 2px #F6A000 !important;
+    }
+    
+    .dynamic-content-container .hero-subtitle {
+        font-size: clamp(0.8rem, 2vw, 1rem) !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .dynamic-content-container .about,
+    .dynamic-content-container .events,
+    .dynamic-content-container .partners {
+        padding: 40px 0 !important;
+    }
+    
+    .dynamic-content-container .section-title {
+        font-size: clamp(1.5rem, 6vw, 2rem) !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .dynamic-content-container .about-content,
+    .dynamic-content-container .events-grid {
+        gap: 1.2rem !important;
+    }
+    
+    .dynamic-content-container .about-card {
+        padding: 1.5rem !important;
+        border-radius: 15px !important;
+    }
+    
+    .dynamic-content-container .about-card h3 {
+        font-size: 1.3rem !important;
+        margin-bottom: 0.8rem !important;
+    }
+    
+    .dynamic-content-container .about-card p {
+        font-size: 0.9rem !important;
+        line-height: 1.6 !important;
+    }
+    
+    .dynamic-content-container .event-card {
+        padding: 1.5rem !important;
+        border-radius: 15px !important;
+    }
+    
+    .dynamic-content-container .event-header {
+        margin-bottom: 1.2rem !important;
+    }
+    
+    .dynamic-content-container .event-logo {
+        width: 60px !important;
+        height: 60px !important;
+        margin-bottom: 0.8rem !important;
+        border-radius: 12px !important;
+    }
+    
+    .dynamic-content-container .logo-image {
+        max-width: 40px !important;
+        max-height: 40px !important;
+    }
+    
+    .dynamic-content-container .event-title {
+        font-size: 1.3rem !important;
+        margin-bottom: 0.4rem !important;
+    }
+    
+    .dynamic-content-container .event-tag {
+        padding: 0.25rem 0.8rem !important;
+        font-size: 0.7rem !important;
+    }
+    
+    .dynamic-content-container .event-description {
+        font-size: 0.85rem !important;
+        line-height: 1.6 !important;
+        margin-bottom: 1.2rem !important;
+    }
+    
+    .dynamic-content-container .event-info {
+        padding: 1rem !important;
+        margin-bottom: 1.5rem !important;
+        border-radius: 8px !important;
+    }
+    
+    .dynamic-content-container .info-item {
+        margin-bottom: 0.6rem !important;
+    }
+    
+    .dynamic-content-container .info-label,
+    .dynamic-content-container .info-value {
+        font-size: 0.85rem !important;
+    }
+    
+    .dynamic-content-container .register-button {
+        padding: 0.8rem 1.2rem !important;
+        font-size: 0.9rem !important;
+        border-radius: 40px !important;
+    }
+    
+    .dynamic-content-container .partners-text {
+        font-size: 0.95rem !important;
+        line-height: 1.6 !important;
+        margin-bottom: 1.5rem !important;
+        padding: 0 10px !important;
+    }
+    
+    .dynamic-content-container .partner-button {
+        padding: 1rem 1.5rem !important;
+        font-size: 0.9rem !important;
+        gap: 0.8rem !important;
+        border-radius: 40px !important;
+    }
+    
+    .dynamic-content-container .button-icon {
+        font-size: 1.2rem !important;
+    }
+    
+    .dynamic-content-container .footer {
+        padding: 30px 0 15px !important;
+    }
+    
+    .dynamic-content-container .footer-content {
+        gap: 1.5rem !important;
+        margin-bottom: 2rem !important;
+    }
+    
+    .dynamic-content-container .footer-section h4 {
+        font-size: 1rem !important;
+        margin-bottom: 0.8rem !important;
+    }
+    
+    .dynamic-content-container .footer-section p {
+        font-size: 0.8rem !important;
+        margin-bottom: 0.4rem !important;
+    }
+    
+    .dynamic-content-container .social-links {
+        gap: 0.6rem !important;
+    }
+    
+    .dynamic-content-container .social-link {
+        padding: 0.4rem 0.7rem !important;
+        font-size: 0.8rem !important;
+        border-radius: 8px !important;
+    }
+    
+    .dynamic-content-container .footer-bottom {
+        padding-top: 1.5rem !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .dynamic-content-container .modal-content {
+        margin: 2% auto !important;
+        padding: 1.5rem !important;
+        width: 98% !important;
+        border-radius: 15px !important;
+    }
+    
+    .dynamic-content-container .close-button {
+        right: 0.8rem !important;
+        top: 0.8rem !important;
+        font-size: 1.3rem !important;
+    }
+    
+    .dynamic-content-container #modalTitle {
+        font-size: 1.3rem !important;
+        margin-bottom: 1.2rem !important;
+    }
+    
+    .dynamic-content-container .form-group {
+        margin-bottom: 1rem !important;
+    }
+    
+    .dynamic-content-container .form-group label {
+        font-size: 0.85rem !important;
+        margin-bottom: 0.4rem !important;
+    }
+    
+    .dynamic-content-container .form-group input,
+    .dynamic-content-container .form-group select {
+        padding: 0.7rem !important;
+        font-size: 0.9rem !important;
+        border-radius: 8px !important;
+    }
+    
+    .dynamic-content-container .submit-button {
+        padding: 0.9rem 1.2rem !important;
+        font-size: 0.95rem !important;
+        margin-top: 0.8rem !important;
+        border-radius: 40px !important;
+    }
+    
+    .dynamic-content-container .events::before {
+        width: 300px !important;
+        height: 300px !important;
+    }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 360px) {
+    .dynamic-content-container .main-title {
+        font-size: 1.3rem !important;
+    }
+    
+    .dynamic-content-container .title-line {
+        font-size: clamp(0.95rem, 7.2vw, 1.5rem) !important;
+    }
+    
+    .dynamic-content-container .year {
+        font-size: 1.2rem !important;
+    }
+    
+    .dynamic-content-container .section-title {
+        font-size: 1.3rem !important;
+    }
+    
+    .dynamic-content-container .about-card,
+    .dynamic-content-container .event-card {
+        padding: 1.2rem !important;
+    }
+    
+    .dynamic-content-container .register-button,
+    .dynamic-content-container .partner-button,
+    .dynamic-content-container .submit-button {
+        padding: 0.7rem 1rem !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .dynamic-content-container .modal-content {
+        padding: 1.2rem !important;
+    }
+}
+
+/* Smooth Scrolling - применяется только внутри контейнера */
+.dynamic-content-container {
+    scroll-behavior: smooth;
+}
+
+/* Navigation Styles */
+.dynamic-content-container .nav {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+    background: linear-gradient(180deg, rgba(0,0,0,.85), rgba(0,0,0,.6)) !important;
+    border-bottom: 1px solid rgba(246, 160, 0, 0.2) !important;
+    backdrop-filter: saturate(1.2) blur(10px) !important;
+    -webkit-backdrop-filter: saturate(1.2) blur(10px) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.dynamic-content-container .nav-inner {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    height: 68px !important;
+    gap: 12px !important;
+    margin: 0 !important;
+    padding: 0 20px !important;
+}
+
+.dynamic-content-container .brand {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    font-weight: 700 !important;
+    letter-spacing: .2px !important;
+    white-space: nowrap !important;
+    color: var(--text-white) !important;
+    text-decoration: none !important;
+    font-size: 1.1rem !important;
+}
+
+.dynamic-content-container .brand *,
+.dynamic-content-container .brand span,
+.dynamic-content-container .brand div,
+.dynamic-content-container .brand p {
+    color: var(--text-white) !important;
+}
+
+.dynamic-content-container .brand-badge {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 10px !important;
+    background: linear-gradient(180deg, rgba(246, 160, 0, 0.2), rgba(246, 160, 0, 0.1)) !important;
+    display: grid !important;
+    place-items: center !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,.35) !important;
+    flex: 0 0 36px !important;
+}
+
+.dynamic-content-container .brand-badge svg {
+    width: 22px !important;
+    height: 22px !important;
+    stroke: var(--primary-purple) !important;
+}
+
+.dynamic-content-container .nav-actions {
+    display: flex !important;
+    gap: 8px !important;
+    align-items: center !important;
+}
+
+/* Buttons */
+.dynamic-content-container .btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)) !important;
+    padding: 10px 16px !important;
+    border-radius: 12px !important;
+    color: var(--text-white) !important;
+    font-weight: 600 !important;
+    transition: transform .05s ease, box-shadow .2s ease, border-color .2s ease !important;
+    white-space: nowrap !important;
+    text-decoration: none !important;
+    font-size: 0.9rem !important;
+
+}
+
+.dynamic-content-container .btn:hover {
+    box-shadow: 0 8px 24px rgba(246,160,0,.12) !important;
+    border-color: rgba(255,255,255,.2) !important;
+    color: var(--text-white) !important;
+    background: linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.06)) !important;
+}
+
+.dynamic-content-container .btn.primary {
+    border: none !important;
+    background: linear-gradient(90deg, var(--primary-purple), #c67f00) !important;
+    color: var(--text-white) !important;
+}
+
+.dynamic-content-container .nav .btn {
+    margin-left: 0 !important;
+    padding: 8px 14px !important;
+    font-size: 0.9rem !important;
+    background: rgba(246, 160, 0, 0.1) !important;
+    border: 1px solid rgba(246, 160, 0, 0.2) !important;
+    color: var(--text-white) !important;
+    text-decoration: none !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+}
+
+.dynamic-content-container .nav .btn:hover {
+    background: rgba(246, 160, 0, 0.2) !important;
+    border-color: var(--primary-purple) !important;
+    transform: translateY(-1px) !important;
+}
+
+.dynamic-content-container .nav .btn.primary {
+    background: linear-gradient(135deg, var(--primary-purple), #c67f00) !important;
+    border: none !important;
+    color: var(--text-white) !important;
+}
+
+.dynamic-content-container .mobile-nav {
+    display: none !important;
+    background: linear-gradient(180deg, rgba(0,0,0,.85), rgba(0,0,0,.6)) !important;
+    border-bottom: 1px solid rgba(246, 160, 0, 0.2) !important;
+    backdrop-filter: saturate(1.2) blur(10px) !important;
+    -webkit-backdrop-filter: saturate(1.2) blur(10px) !important;
+}
+
+.dynamic-content-container .mobile-nav-inner {
+    display: flex !important;
+    gap: 8px !important;
+    padding: 12px 0 !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+}
+
+.dynamic-content-container .mobile-nav .btn {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    text-align: center !important;
+    overflow: hidden !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    line-height: 1 !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+}
+
+/* Chips/Tags */
+.dynamic-content-container .chips {
+    display: flex !important;
+    gap: 10px !important;
+    flex-wrap: wrap !important;
+    margin-top: 16px !important;
+}
+
+.dynamic-content-container .chip {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(246, 160, 0, 0.3) !important;
+    background: rgba(246, 160, 0, 0.1) !important;
+    color: var(--text-gray) !important;
+}
+
+/* Timeline */
+.dynamic-content-container .timeline {
+    position: relative !important;
+    padding-left: 18px !important;
+}
+
+.dynamic-content-container .timeline::before {
+    content: "" !important;
+    position: absolute !important;
+    left: 6px !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 2px !important;
+    background: linear-gradient(180deg, var(--primary-purple), transparent) !important;
+    opacity: .6 !important;
+}
+
+.dynamic-content-container .t-item {
+    position: relative !important;
+    padding: 6px 0 6px 20px !important;
+    margin-bottom: 12px !important;
+}
+
+.dynamic-content-container .t-item::before {
+    content: "" !important;
+    position: absolute !important;
+    left: -3px !important;
+    top: 16px !important;
+    width: 10px !important;
+    height: 10px !important;
+    border-radius: 50% !important;
+    background: rgba(246, 160, 0, 0.5) !important;
+    box-shadow: 0 0 0 4px rgba(246, 160, 0, 0.1) !important;
+    transition: all .2s ease !important;
+}
+
+.dynamic-content-container .t-item.is-active::before {
+    background: var(--primary-purple) !important;
+    box-shadow: 0 0 0 6px rgba(246, 160, 0, 0.3), 0 6px 14px rgba(246, 160, 0, 0.4) !important;
+    transform: scale(1.1) !important;
+}
+
+.dynamic-content-container .t-item.is-future::before {
+    background: var(--accent-green) !important;
+    box-shadow: 0 0 0 5px rgba(246, 160, 0, 0.15) !important;
+}
+
+.dynamic-content-container .t-item.is-past {
+    opacity: .8 !important;
+}
+
+.dynamic-content-container .t-item.is-past::before {
+    background: rgba(255,255,255,.18) !important;
+    box-shadow: 0 0 0 3px rgba(255,255,255,.05) !important;
+}
+
+.dynamic-content-container .t-item b {
+    display: block !important;
+    color: var(--text-white) !important;
+    margin-bottom: 2px !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+}
+
+/* Mentors Section - card styles */
+.dynamic-content-container .mentor-card-inner {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 20px !important;
+    padding: 1.5rem !important;
+    text-align: center !important;
+    transition: all 0.3s ease !important;
+    height: 100% !important;
+    min-height: 380px !important;
+    max-height: 380px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+}
+
+.dynamic-content-container .mentor-card:hover .mentor-card-inner {
+    border-color: var(--primary-purple) !important;
+    box-shadow: 0 20px 40px rgba(246, 160, 0, 0.2) !important;
+}
+
+.dynamic-content-container .mentor-photo {
+    width: 100px !important;
+    height: 100px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    margin: 0 auto 1rem !important;
+    border: 3px solid var(--primary-purple) !important;
+    display: block !important;
+    flex-shrink: 0 !important;
+}
+
+.dynamic-content-container .mentor-name {
+    font-size: 1.2rem !important;
+    font-weight: 600 !important;
+    color: var(--text-white) !important;
+    margin-bottom: 0.4rem !important;
+    line-height: 1.3 !important;
+}
+
+.dynamic-content-container .mentor-title {
+    color: var(--primary-purple) !important;
+    font-size: 0.85rem !important;
+    margin-bottom: 0.8rem !important;
+    line-height: 1.4 !important;
+}
+
+.dynamic-content-container .mentor-achievements {
+    color: var(--text-gray) !important;
+    font-size: 0.8rem !important;
+    line-height: 1.5 !important;
+    flex-grow: 1 !important;
+    overflow: hidden !important;
+}
+
+/* CTA Section */
+.dynamic-content-container .cta {
+    background: linear-gradient(90deg, rgba(246, 160, 0, 0.15), rgba(246, 160, 0, 0.12)) !important;
+    border-top: 1px solid rgba(246, 160, 0, 0.2) !important;
+    border-bottom: 1px solid rgba(246, 160, 0, 0.2) !important;
+    padding: 80px 0 60px 0 !important;
+    margin-top: 4rem !important;
+}
+
+.dynamic-content-container .cta-inner {
+    display: flex !important;
+    gap: 22px !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+}
+
+.dynamic-content-container .cta h2 {
+    font-size: clamp(1.8rem, 4vw, 2.5rem) !important;
+    margin: 0 0 8px 0 !important;
+    color: var(--text-white) !important;
+}
+
+/* FAQ Section */
+.dynamic-content-container details {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    padding: 14px 16px !important;
+    border-radius: 12px !important;
+    transition: all .2s ease !important;
+    margin-bottom: 10px !important;
+}
+
+.dynamic-content-container details:hover {
+    border-color: rgba(246, 160, 0, 0.55) !important;
+    background: rgba(0, 0, 0, 0.35) !important;
+}
+
+.dynamic-content-container summary {
+    cursor: pointer !important;
+    font-weight: 600 !important;
+    list-style: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    position: relative !important;
+    padding-right: 24px !important;
+    color: var(--text-white) !important;
+}
+
+.dynamic-content-container summary::-webkit-details-marker {
+    display: none !important;
+}
+
+.dynamic-content-container summary::after {
+    content: '' !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 16px !important;
+    height: 16px !important;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a7b0c0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6,9 12,15 18,9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat center !important;
+    background-size: 16px !important;
+    transition: transform .3s ease !important;
+}
+
+.dynamic-content-container details[open] summary::after {
+    transform: translateY(-50%) rotate(180deg) !important;
+}
+
+.dynamic-content-container details[open] {
+    border-color: var(--primary-purple) !important;
+    background: linear-gradient(135deg, rgba(246, 160, 0, 0.1), rgba(246, 160, 0, 0.08)) !important;
+}
+
+.dynamic-content-container details p {
+    margin-top: 12px !important;
+    color: var(--text-gray) !important;
+    line-height: 1.6 !important;
+}
+
+/* Scroll to top button */
+.dynamic-content-container .scroll-to-top {
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
+    width: 48px !important;
+    height: 48px !important;
+    background: linear-gradient(135deg, var(--primary-purple), #c67f00) !important;
+    border: none !important;
+    border-radius: 50% !important;
+    color: var(--text-white) !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 8px 24px rgba(246, 160, 0, 0.3) !important;
+    transition: all .3s ease !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateY(20px) !important;
+    z-index: 100 !important;
+}
+
+.dynamic-content-container .scroll-to-top.visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+}
+
+.dynamic-content-container .scroll-to-top:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 12px 32px rgba(246, 160, 0, 0.4) !important;
+}
+
+.dynamic-content-container .scroll-to-top svg {
+    width: 20px !important;
+    height: 20px !important;
+}
+
+/* Carousel Styles */
+.dynamic-content-container .carousel-wrapper {
+    position: relative !important;
+    overflow: hidden !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    padding: 20px 0 !important;
+}
+
+.dynamic-content-container .carousel-container {
+    display: flex !important;
+    cursor: grab !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+}
+
+.dynamic-content-container .carousel-container.dragging {
+    cursor: grabbing !important;
+}
+
+.dynamic-content-container .carousel-item {
+    flex: 0 0 auto !important;
+    min-width: 200px !important;
+    max-width: 200px !important;
+    padding: 0 12px !important;
+    box-sizing: border-box !important;
+    margin-right: 24px !important;
+}
+
+.dynamic-content-container .carousel-item:last-child {
+    margin-right: 0 !important;
+}
+
+.dynamic-content-container .carousel-nav {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    margin-top: 24px !important;
+}
+
+.dynamic-content-container .carousel-dot {
+    width: 10px !important;
+    height: 10px !important;
+    border-radius: 50% !important;
+    background: rgba(246, 160, 0, 0.3) !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    padding: 0 !important;
+}
+
+.dynamic-content-container .carousel-dot.active {
+    background: var(--primary-purple) !important;
+    width: 24px !important;
+    border-radius: 5px !important;
+}
+
+/* Partners Carousel */
+.dynamic-content-container .partners-grid {
+    display: flex !important;
+    gap: 0 !important;
+    align-items: center !important;
+}
+
+.dynamic-content-container .partner-logo {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 80px !important;
+    min-height: 80px !important;
+    max-height: 80px !important;
+    width: 100% !important;
+    max-width: 200px !important;
+    background: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 20px !important;
+    padding: 16px !important;
+    transition: all .2s ease !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+.dynamic-content-container .partner-logo:hover {
+    box-shadow: 0 8px 24px rgba(246, 160, 0, 0.15) !important;
+    border-color: var(--primary-purple) !important;
+}
+
+.dynamic-content-container .partner-logo img {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    filter: brightness(0.9) !important;
+    transition: filter .2s ease !important;
+    pointer-events: none !important;
+}
+
+.dynamic-content-container .partner-logo:hover img {
+    filter: brightness(1) !important;
+}
+
+/* Mentors Carousel */
+.dynamic-content-container .mentors-grid {
+    display: flex !important;
+    gap: 0 !important;
+}
+
+.dynamic-content-container .mentor-card {
+    flex: 0 0 auto !important;
+    width: 280px !important;
+    max-width: 280px !important;
+    padding: 0 12px !important;
+    box-sizing: border-box !important;
+}
+
+.dynamic-content-container .mentor-card-inner {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Responsive for nav */
+@media (max-width: 980px) {
+    .dynamic-content-container .nav-actions {
+        display: none !important;
+    }
+    .dynamic-content-container .mobile-nav {
+        display: block !important;
+    }
+    .dynamic-content-container .carousel-item {
+        min-width: 240px !important;
+        max-width: 240px !important;
+    }
+    .dynamic-content-container .mentor-card {
+        width: 240px !important;
+        max-width: 240px !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .dynamic-content-container .carousel-item {
+        min-width: calc(100% - 16px) !important;
+        max-width: calc(100% - 16px) !important;
+        width: calc(100% - 16px) !important;
+        padding: 0 8px !important;
+    }
+    .dynamic-content-container .mentor-card {
+        width: calc(100% - 16px) !important;
+        max-width: calc(100% - 16px) !important;
+        padding: 0 8px !important;
+    }
+    .dynamic-content-container .partner-logo {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+    </style>
+</head>
+<body style="margin: 0px;">
+    <div class="dynamic-content-container">
+    <!-- Navigation -->
+    <nav class="nav" role="navigation" aria-label="Основное">
+        <div class="container nav-inner">
+            <a class="brand" href="#top">
+                <span class="brand-badge" aria-hidden="true">
+                  М
+                </span>
+                <span>Югорский беспилотник</span>
+            </a>
+            <div class="nav-actions" id="desktop-menu">
+                <a href="#about" class="btn">О событии</a>
+                <a href="#events" class="btn">Мероприятия</a>
+                <a href="#mentors" class="btn">Менторы</a>
+                <a href="#prizes" class="btn">Призы</a>
+                <a href="#reg" class="btn primary">Регистрация</a>
+            </div>
+        </div>
+        <div class="mobile-nav" id="mobile-nav">
+            <div class="container">
+                <div class="mobile-nav-inner">
+                    <a href="#about" class="btn">О событии</a>
+                    <a href="#events" class="btn">Мероприятия</a>
+                    <a href="#mentors" class="btn">Менторы</a>
+                    <a href="#prizes" class="btn">Призы</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="top">
+        <div class="hero-background"></div>
+        <div class="hero-kandinsky">
+            <img src="https://tedmon1998.github.io/svg-icons/yugorskiy_bespilotnik/background.png" alt="" class="kandinsky-image">
+        </div>
+        <div class="container">
+            <h1 class="main-title">
+                <span class="title-line title-left">ЮГОРСКИЙ</span>
+                <span class="title-line title-center">БЕСПИЛОТНИК</span>
+                <!-- <span class="title-line title-right">
+                    <span class="year">2<span class="accent-zero">0</span>25</span>
+                </span> -->
+            </h1>
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section class="about" id="timeline" style="padding: 60px 0 !important;">
+        <div class="container">
+            <div class="section-title" style="margin-bottom: 1.5rem !important;">
+                <h2 style="font-size: clamp(1.8rem, 4vw, 2.5rem) !important;">Ключевые даты</h2>
+                <!-- <p class="muted" style="color: var(--text-gray); font-size: 0.9rem !important;">Сроки могут уточняться по согласованию.</p> -->
+            </div>
+            <div class="about-content" style="grid-template-columns: 1fr 1fr; max-width: 1000px; margin: 0 auto; gap: 1.5rem !important;">
+                <!-- День 1 -->
+                <div class="about-card" style="padding: 1.5rem !important;">
+                    <h3 style="font-size: 1.3rem !important; margin-bottom: 1rem !important; color: var(--primary-purple) !important;">День 1 (11 апреля)</h3>
+                    <div class="timeline" aria-label="Расписание первого дня">
+                        <div class="t-item" data-date="2026-04-11" data-start="2026-04-11T10:00" data-end="2026-04-11T11:00">
+                            <b>10:00-11:00</b>
+                            <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Регистрация участников</span>
+                        </div>
+                        <div class="t-item" data-date="2026-04-11" data-start="2026-04-11T11:00" data-end="2026-04-11T11:30">
+                            <b>11:00-11:30</b>
+                            <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Торжественное открытие мероприятия</span>
+                        </div>
+                        <div class="t-item" data-date="2026-04-11" data-start="2026-04-11T11:30" data-end="2026-04-11T16:00">
+                            <b>11:30-16:00</b>
+                            <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Решение станций</span>
+                        </div>
+                        <div class="t-item" data-date="2026-04-11" data-start="2026-04-11T13:00" data-end="2026-04-11T14:00">
+                          <b>13:00-14:00</b>
+                          <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Перерыв</span>
+                      </div>
+                        <div class="t-item" data-date="2026-04-11" data-start="2026-04-11T16:00" data-end="2026-04-11T16:30">
+                            <b>16:00-16:30</b>
+                            <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Окончание решения станций, разъяснение второго дня</span>
+                        </div>
+                        <div class="t-item" data-date="2026-04-11" data-start="2026-04-11T14:00" data-end="2026-04-11T16:00">
+                            <b>14:00-16:00</b>
+                            <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Перерыв</span>
+                        </div>
+                        <div class="t-item" data-date="2026-04-11" data-start="2026-04-11T16:30" data-end="2026-04-11T22:00">
+                            <b>16:30-22:00</b>
+                            <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Работа над проектами (кейсами)</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- День 2 -->
+                <div class="about-card" style="padding: 1.5rem !important;">
+                    <h3 style="font-size: 1.3rem !important; margin-bottom: 1rem !important; color: var(--primary-purple) !important;">День 2 (12 апреля)</h3>
+                    <div class="timeline" aria-label="Расписание второго дня">
+                        <div class="t-item" data-date="2026-04-12" data-start="2026-04-12T07:00" data-end="2026-04-12T12:00">
+                          <b>07:00-12:00</b>
+                          <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Работа над проектами (кейсами)</span>
+                        </div>  
+                        <div class="t-item" data-date="2026-04-12" data-start="2026-04-12T08:00" data-end="2026-04-12T09:30">
+                              <b>08:00-09:30</b>
+                              <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Чекпоинт</span>
+                        </div>
+                        <div class="t-item" data-date="2026-04-12" data-end="2026-04-12T08:30">
+                          <b>До 08:30</b>
+                          <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Опубликовать результаты работы</span>
+                        </div>
+                        <div class="t-item" data-date="2026-04-12" data-end="2026-04-12T09:00">
+                            <b>До 09:00</b>
+                            <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Отправить код на GitHub</span>
+                        </div>
+                        <div class="t-item" data-date="2026-04-12" data-start="2026-04-12T08:00" data-end="2026-04-12T10:30">
+                            <b>08:00-10:30</b>
+                            <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Подготовка презентации</span>
+                        </div>
+                        <div class="t-item" data-date="2026-04-12" data-start="2026-04-12T10:30" data-end="2026-04-12T11:00">
+                            <b>10:30-11:00</b>
+                            <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Загрузка презентации на платформу</span>
+                        </div>
+                        <div class="t-item" data-date="2026-04-12" data-start="2026-04-12T10:30" data-end="2026-04-12T12:00">
+                            <b>10:30-12:00</b>
+                            <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Перерыв</span>
+                        </div>
+                        <div class="t-item" data-date="2026-04-12" data-start="2026-04-12T12:00" data-end="2026-04-12T15:30">
+                            <b>12:00-15:30</b>
+                            <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Презентация проектов</span>
+                        </div>
+                        <div class="t-item" data-date="2026-04-12" data-start="2026-04-12T15:30" data-end="2026-04-12T16:00">
+                            <b>15:30-16:00</b>
+                            <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Подведение итогов, награждение</span>
+                        </div>
+                        <div class="t-item" data-date="2026-04-12" data-start="2026-04-12T16:00" data-end="2026-04-12T17:00">
+                            <b>16:00-17:00</b>
+                            <span style="color: var(--text-gray); display: block; margin-top: 0.3rem; font-size: 0.9rem !important;">Торт, нетворкинг</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <h2 class="section-title">О событии</h2>
+            <div class="about-content">
+                <div class="about-card">
+                    <h3>Организатор</h3>
+                    <p>АНО «Интеллектуальный клуб» (Интеллектуальный клуб). Организация существует с 2010 года и реализует социальные инициативы при поддержке городских, окружных и президентских грантов.</p>
+                </div>
+                <div class="about-card">
+                    <h3>Участники</h3>
+                    <p>Студенты образовательных организаций СПО и ВО ХМАО–Югры. Команды до 5 человек. Участие индивидуально или в команде.</p>
+                </div>
+                <div class="about-card">
+                    <h3>О кейсах</h3>
+                    <p>Практико-ориентированные задания и кейсы для команд. Два этапа: технические задачи и командные кейсы, приближенные к реальным инцидентам и задачам индустрии.</p>
+                </div>
+            </div>
+            <div class="chips" style="margin-top: 2rem; justify-content: center;">
+                <span class="chip">Разработка</span>
+                <span class="chip">Искусственный интеллект</span>
+                <span class="chip">Кибербезопасность</span>
+                <span class="chip">Цифровые технологии</span>
+                <span class="chip">Инновации</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section class="events" id="events">
+        <div class="container">
+            <h2 class="section-title">Мероприятие</h2>
+            <div class="events-grid">
+                
+                <!-- Digital Challenge -->
+                <div class="event-card">
+                    <div class="event-header">
+                        <div class="event-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/yugorskiy_bespilotnik/yugorskiy_bespilotnik.png" alt=">Югорский Беспилотник Logo" class="logo-image">
+                        </div>
+                        <h3 class="event-title">Югорский Беспилотник</h3>
+                        <span class="event-tag">Цифровые технологии</span>
+                    </div>
+                    <p class="event-description">
+                      Участников ждут реальные кейсы, работа в командах и защита проектов перед экспертами.
+                    </p>
+                    <div class="event-info">
+                        <div class="info-item">
+                            <span class="info-label">Дата:</span>
+                            <span class="info-value">11–12 апреля 2026</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Формат:</span>
+                            <span class="info-value">Онлайн/Офлайн</span>
+                        </div>
+                    </div>
+                    <button class="register-button" onclick="openRegistration('Digital Challenge')">
+                        Зарегистрироваться
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Mentors Section -->
+    <section class="about" id="mentors">
+        <div class="container">
+            <h2 class="section-title">Менторы</h2>
+            <div class="carousel-wrapper">
+                <div class="carousel-container" id="mentorsCarousel">
+                    <!-- <div class="carousel-item mentor-card">
+                        <div class="mentor-card-inner">
+                            <img src="https://tedmon1998.github.io/svg-icons/mentors/nicolayev.png" alt="Hиколаев Сергей Николаевич" class="mentor-photo">
+                            <h3 class="mentor-name">Hиколаев Сергей Николаевич</h3>
+                            <p class="mentor-title">Старший DevOps-инженер АО СЗ ДСК-1</p>
+                        </div>
+                    </div> -->
+                    <!-- <div class="carousel-item mentor-card">
+                        <div class="mentor-card-inner">
+                            <img src="https://tedmon1998.github.io/svg-icons/mentors/gonchar.png" alt="Гончар Алексей Дмитриевич" class="mentor-photo">
+                            <h3 class="mentor-name">Гончар Алексей Дмитриевич</h3>
+                            <p class="mentor-title">Главный специалист по программному обеспечению ПУ «СургутАСУнефть» ПАО «Сургутнефтегаз»</p>
+                        </div>
+                    </div> -->
+                    <!-- <div class="carousel-item mentor-card">
+                        <div class="mentor-card-inner">
+                            <img src="https://tedmon1998.github.io/svg-icons/mentors/aleksandr.png" alt="Распопов Александр Леонидович" class="mentor-photo">
+                            <h3 class="mentor-name">Распопов Александр Леонидович</h3>
+                            <p class="mentor-title">Руководитель блока ИТ многопрофильного холдинга, Директор по ИТ Арпикон</p>
+                        </div>
+                    </div> -->
+                    <div class="carousel-item mentor-card">
+                        <div class="mentor-card-inner">
+                            <img src="https://tedmon1998.github.io/svg-icons/mentors/dima.png" alt="Балаушко Дмитрий Александрович" class="mentor-photo">
+                            <h3 class="mentor-name">Балаушко Дмитрий Александрович</h3>
+                            <p class="mentor-title">Ментор, руководитель компании со стажем 20 лет, техно-оптимист</p>
+                            <!-- <p class="mentor-achievements">Эксперт в области разработки и управления IT-проектами. Ментор с многолетним опытом.</p> -->
+                        </div>
+                    </div>
+                    <div class="carousel-item mentor-card">
+                        <div class="mentor-card-inner">
+                            <img src="https://tedmon1998.github.io/svg-icons/mentors/edmon.png" alt="Тунян Эдмон Гарникович" class="mentor-photo">
+                            <h3 class="mentor-name">Тунян Эдмон Гарникович</h3>
+                            <p class="mentor-title">Технический директор ООО «ЕДРО Технологии»</p>
+                            <!-- <p class="mentor-achievements">Эксперт в области разработки и управления IT-проектами. Ментор с многолетним опытом.</p> -->
+                        </div>
+                    </div>
+                    <div class="carousel-item mentor-card">
+                        <div class="mentor-card-inner">
+                            <img src="https://tedmon1998.github.io/svg-icons/mentors/rost.png" alt="Сазиков Ростислав Станиславович" class="mentor-photo">
+                            <h3 class="mentor-name">Сазиков Ростислав Станиславович</h3>
+                            <p class="mentor-title">Соучередитель ООО «ЕДРО Технологии»</p>
+                            <!-- <p class="mentor-achievements">Эксперт в области научных исследований и технологического развития.</p> -->
+                        </div>
+                    </div>
+                    <!-- <div class="carousel-item mentor-card">
+                        <div class="mentor-card-inner">
+                            <img src="https://tedmon1998.github.io/svg-icons/mentors/vadim.png" alt="Потапов Вадим Аркадьевич" class="mentor-photo">
+                            <h3 class="mentor-name">Потапов Вадим Аркадьевич</h3>
+                            <p class="mentor-title">Инженер-программист, СурГУ</p>
+                        </div>
+                    </div> -->
+                    <div class="carousel-item mentor-card">
+                        <div class="mentor-card-inner">
+                            <img src="https://tedmon1998.github.io/svg-icons/mentors/vitaly.png" alt="Конышев Виталий Юрьевич" class="mentor-photo">
+                            <h3 class="mentor-name">Конышев Виталий Юрьевич</h3>
+                            <p class="mentor-title">Инженер-программист, преподаватель, ментор</p>
+                            <!-- <p class="mentor-achievements">DevOps · Linux/RedOS · Python/JS/Java · Unity/Unreal.</p> -->
+                        </div>
+                    </div>
+                    <div class="carousel-item mentor-card">
+                      <div class="mentor-card-inner">
+                          <img src="https://tedmon1998.github.io/svg-icons/mentors/kuchin.png" alt="Алексей Сергеевич Кучин" class="mentor-photo">
+                          <h3 class="mentor-name">Алексей Сергеевич Кучин</h3>
+                          <p class="mentor-title">Председатель АНО «Интеллектуальный клуб», депутат думы города Сургута</p>
+                      </div>
+                    </div>
+                    <div class="carousel-item mentor-card">
+                      <div class="mentor-card-inner">
+                          <img src="https://tedmon1998.github.io/svg-icons/mentors/azamat.png" alt="Куланбаев Азамат Булатович" class="mentor-photo">
+                          <h3 class="mentor-name">Куланбаев Азамат Булатович</h3>
+                          <p class="mentor-title">Генеральный директор ООО «Арпикон»</p>
+                      </div>
+                    </div>
+                    <div class="carousel-item mentor-card">
+                      <div class="mentor-card-inner">
+                          <img src="https://tedmon1998.github.io/svg-icons/mentors/olya.png" alt="Сидорова Ольга Викторовна" class="mentor-photo">
+                          <h3 class="mentor-name">Сидорова Ольга Викторовна</h3>
+                          <p class="mentor-title">Генеральный директор АНО Школа 21. Югра</p>
+                      </div>
+                    </div>
+                    <!-- <div class="carousel-item mentor-card">
+                        <div class="mentor-card-inner">
+                            <img src="https://tedmon1998.github.io/svg-icons/mentors/pavel.png" alt="Корженевский Павел Павлович" class="mentor-photo">
+                            <h3 class="mentor-name">Корженевский Павел Павлович</h3>
+                            <p class="mentor-title">Ведущий инженер-программист ПУ «СургутАСУнефть», ПАО «Сургутнефтегаз»</p>
+                        </div>
+                    </div> -->
+                </div>
+                <div class="carousel-nav" id="mentorsCarouselNav"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Prizes Section -->
+    <section class="about" id="prizes">
+        <div class="container">
+            <h2 class="section-title">Призы и награды</h2>
+            <div class="about-content">
+                <!-- <div class="about-card">
+                    <h3>Призовой фонд</h3>
+                    <p>Призовой фонд составляет > 250 000 ₽. Дополнительные призы для призёров и специальные номинации.</p>
+                </div> -->
+                <div class="about-card">
+                    <h3>Дипломы и сертификаты</h3>
+                    <p>Участникам и победителям — сертификаты и дипломы «Югорский беспилотник».</p>
+                </div>
+                <div class="about-card">
+                    <h3>Мерч</h3>
+                    <p>Предусмотрена сувенирная продукция от компании партнёров.</p>
+                </div>
+                <div class="about-card">
+                    <h3>Медиа</h3>
+                    <p>Фото/видео-отчёт и промо-ролики по итогам мероприятия. Публикации в социальных сетях и медиа-партнёров.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documents Section -->
+    <section class="about" id="docs" style="padding-bottom: 3rem;">
+        <div class="container">
+            <div class="section-title" style="display: flex; align-items: baseline; justify-content: space-between; gap: 24px; margin-bottom: 2rem; flex-wrap: wrap;">
+              <!-- <h2 style="margin: 0; font-size: clamp(22px, 4vw, 36px);">Документы и правила</h2> -->
+                <h2 style="margin: 0; font-size: clamp(22px, 4vw, 36px);">Правила</h2>
+                <!-- <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a class="btn" href="https://disk.yandex.ru/i/GidodFJxTMKbrQ" target="_blank" rel="noopener">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        <span>Положение (PDF)</span>
+                    </a>
+                    <a class="btn" href="https://disk.yandex.ru/i/6Tg57x4vPBmMOQ" target="_blank" rel="noopener">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Программа мероприятия (PDF)
+                    </a>
+                </div> -->
+            </div>
+            <div class="about-content" style="grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;">
+                <div class="about-card" style="padding: 18px;">
+                    <h3 style="margin: 6px 0 8px; font-size: 18px;">Состав команды</h3>
+                    <p style="margin: 0; color: var(--text-gray);">До 5 человек: аналитики, разработчики, дизайнеры, капитан. Допускается распределённая работа.</p>
+                </div>
+                <div class="about-card" style="padding: 18px;">
+                    <h3 style="margin: 6px 0 8px; font-size: 18px;">Оборудование</h3>
+                    <p style="margin: 0; color: var(--text-gray);">Собственные ноутбуки. Интернет на площадке. Разрешены публичные библиотеки/инструменты.</p>
+                </div>
+                <div class="about-card" style="padding: 18px;">
+                    <h3 style="margin: 6px 0 8px; font-size: 18px;">Оценивание</h3>
+                    <p style="margin: 0; color: var(--text-gray);">Актуальность, идея и инновационность, проработанность, реализация, презентация.</p>
+                </div> 
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="reg" style="margin-top: 4rem !important;">
+        <div class="container cta-inner">
+            <div>
+                <h2>Готовы к участию?</h2>
+                <p style="color: var(--text-gray); margin: 0;">Заполните форму — место закрепится после подтверждения организаторов.</p>
+            </div>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin: 0;">
+                <button class="register-button" onclick="openRegistration('Марафон Хакатонов')" style="width: auto; margin: 0;">
+                    Подать заявку
+                </button>
+                <a href="https://t.me/+Qt7GAsc1hOUyOTFi" class="register-button" style="text-decoration: none; display: inline-flex; align-items: center; width: auto; margin: 0;">
+                    Частые вопросы
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partners Section -->
+    <section class="partners" id="partners">
+        <div class="container">
+            <h2 class="section-title">Партнёры и поддержка</h2>
+            <p class="partners-text">
+                Региональные ИТ-компании, финорганизации и вузы поддерживают марафон хакатонов.
+            </p>
+            <div class="carousel-wrapper">
+                <div class="carousel-container" id="partnersCarousel">
+                    <!-- <div class="carousel-item">
+                        <div class="partner-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/AdmSurg.svg" alt="Администрация Сургута" />
+                        </div>
+                    </div> -->
+                    <div class="carousel-item">
+                        <div class="partner-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/EdroWhite.svg" alt="ЕДРО Технологии" />
+                        </div>
+                    </div>
+                    <!-- <div class="carousel-item">
+                        <div class="partner-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/GazpromEnergosbit.svg" alt="Газпром энергосбыт" />
+                        </div>
+                    </div> -->
+                    <div class="carousel-item">
+                        <div class="partner-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/IntelectClub.svg" alt="Интеллект Клуб" />
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="partner-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/logo-tehnopark.svg" alt="Технопарк" />
+                        </div>
+                    </div>
+                    <!-- <div class="carousel-item">
+                        <div class="partner-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/Omedia.svg" alt="Омедиа" />
+                        </div>
+                    </div> -->
+                    <div class="carousel-item">
+                        <div class="partner-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/school21.svg" alt="Школа 21" />
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="partner-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/СурГУ.svg" alt="Сургутский государственный университет" />
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="partner-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/ГрантГубернатораЮгры.svg" alt="Грант губернатора Югры" />
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="partner-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/ФондТехРазвитияЮГРЫ.svg" alt="Фонд научно-технологического развития Югры" />
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="partner-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/ART_LAB.svg" alt="ART LAB" />
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                      <div class="partner-logo">
+                          <img src="https://tedmon1998.github.io/svg-icons/АРПИКОН.svg" alt="АРПИКОН" />
+                      </div>
+                  </div>
+                    <div class="carousel-item">
+                      <div class="partner-logo">
+                          <img src="https://tedmon1998.github.io/svg-icons/geoscan.svg" alt="GEOSCAN" />
+                      </div>
+                  </div>
+                    <div class="carousel-item">
+                      <div class="partner-logo">
+                          <img src="https://tedmon1998.github.io/svg-icons/Юником.svg" alt="Юником" />
+                      </div>
+                  </div>
+                    <div class="carousel-item">
+                      <div class="partner-logo">
+                          <img src="https://tedmon1998.github.io/svg-icons/Необас.svg" alt="Необас" />
+                      </div>
+                  </div>
+                    <!-- <div class="carousel-item">
+                        <div class="partner-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/ТраекторияНадежды.svg" alt="Траектория Надежды" />
+                        </div>
+                    </div> -->
+                    <!-- <div class="carousel-item">
+                        <div class="partner-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/ХМАО.svg" alt="ХМАО-Югра" />
+                        </div>
+                    </div>                    -->
+                     <!-- <div class="carousel-item">
+                        <div class="partner-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/premium.svg" alt="ООО Премиум" />
+                        </div>
+                    </div> -->
+                    <!-- <div class="carousel-item">
+                        <div class="partner-logo">
+                            <img src="https://tedmon1998.github.io/svg-icons/prioritet.svg" alt="Приоритет 2030" />
+                        </div>
+                    </div> -->
+                </div>
+                <div class="carousel-nav" id="partnersCarouselNav"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="about" id="faq">
+        <div class="container">
+            <p style="text-align: center; color: var(--text-gray); margin-bottom: 2rem;">Если остались вопросы — пишите организаторам.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <!-- <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Контакты</h4>
+                    <p>Email: info@hackathonmarathon.ru</p>
+                    <p>Телефон: +7 (XXX) XXX-XX-XX</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Социальные сети</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link">VK</a>
+                        <a href="#" class="social-link">Telegram</a>
+                        <a href="#" class="social-link">YouTube</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Организаторы</h4>
+                    <p>Сургутский государтсвенный университет</p>
+                    <p>ООО ЕДРО Технологии</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2021 Марафон Хакатонов. Все права защищены.</p>
+            </div>
+        </div>
+    </footer> -->
+
+    <!-- Scroll to top button -->
+    <button id="scroll-to-top" class="scroll-to-top" aria-label="Прокрутить вверх">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m18 15-6-6-6 6"/>
+        </svg>
+    </button>
+
+    <!-- Registration Modal -->
+    <div id="registrationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Регистрация</h2>
+            <form id="registrationForm" onsubmit="handleRegistration(event)">
+                <div class="form-group">
+                    <label for="name">Имя и Фамилия*</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email*</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Телефон*</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="university">Учебное заведение</label>
+                    <input type="text" id="university" name="university">
+                </div>
+                <div class="form-group">
+                    <label for="experience">Опыт участия в хакатонах</label>
+                    <select id="experience" name="experience">
+                        <option value="first">Впервые</option>
+                        <option value="beginner">1-2 раза</option>
+                        <option value="experienced">3-5 раз</option>
+                        <option value="expert">Более 5 раз</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-button">Отправить заявку</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+// Global variable to store the selected event
+let selectedEvent = '';
+
+// Open registration modal
+function openRegistration(eventName) {
+    selectedEvent = eventName;
+    const url = 'https://forms.yandex.ru/u/69b03fa7eb6146165ad99ca9';
+    window.open(url, '_blank');
+    // const modal = document.getElementById('registrationModal');
+    // const modalTitle = document.getElementById('modalTitle');
+    // modalTitle.textContent = `Регистрация на ${eventName}`;
+    // modal.style.display = 'block';
+    // document.body.style.overflow = 'hidden';
+}
+
+// Close modal
+function closeModal() {
+    const modal = document.getElementById('registrationModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    document.getElementById('registrationForm').reset();
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('registrationModal');
+    if (event.target === modal) {
+        closeModal();
+    }
+}
+
+// Handle registration form submission
+function handleRegistration(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const data = {
+        event: selectedEvent,
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        university: formData.get('university'),
+        experience: formData.get('experience')
+    };
+    
+    // В реальном приложении здесь был бы запрос к серверу
+    console.log('Registration data:', data);
+    
+    // Показываем сообщение об успешной регистрации
+    alert(`Спасибо за регистрацию на ${selectedEvent}!\n\nМы отправим подтверждение на ${data.email}`);
+    
+    closeModal();
+}
+
+// Download partner information
+function downloadPartnerInfo() {
+    // Создаем содержимое файла
+    const content = `
+МАРАФОН ХАКАТОНОВ 2024
+ИНФОРМАЦИЯ ДЛЯ ПАРТНЕРОВ
+
+О марафоне:
+Марафон хакатонов — это серия соревнований по информационной безопасности и искусственному интеллекту, объединяющая лучших специалистов IT-индустрии.
+
+Мероприятие:
+Digital Challenge (22-12 апреля 2026)
+
+Преимущества партнерства:
+✓ Доступ к пулу талантливых специалистов
+✓ Брендинг и PR-поддержка
+✓ Возможность проведения мастер-классов
+✓ Размещение логотипа на официальных материалах
+✓ Публикации в социальных сетях
+
+Уровни партнерства:
+1. Генеральный партнер
+2. Золотой партнер
+3. Серебряный партнер
+4. Бронзовый партнер
+5. Информационный партнер
+
+Для получения подробной информации свяжитесь с нами:
+Email: partners@hackathonmarathon.ru
+Телефон: +7 (XXX) XXX-XX-XX
+
+С уважением,
+Команда организаторов Марафона Хакатонов
+`;
+
+    // Создаем blob и ссылку для скачивания
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'Партнерская_информация_Марафон_Хакатонов_2024.txt';
+    
+    // Запускаем скачивание
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    
+    // Показываем уведомление
+    alert('Партнерская информация загружается...');
+}
+
+// Smooth scroll для навигационных ссылок
+(function() {
+    // Выполняем код сразу, если DOM готов, иначе ждем DOMContentLoaded
+    const init = function() {
+    // Плавный скролл для якорных ссылок (+ учёт высоты шапки)
+    document.addEventListener('click', (e) => {
+        const a = e.target.closest('a[href^="#"]');
+        if (!a) return;
+        const id = a.getAttribute('href').slice(1);
+        if (!id) return;
+        const el = document.getElementById(id);
+        if (!el) return;
+        e.preventDefault();
+        const navH = 68;
+        window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - navH, behavior: 'smooth' });
+    });
+
+    // Кнопка прокрутки вверх
+    const scrollToTopBtn = document.getElementById('scroll-to-top');
+    const nav = document.querySelector('.nav');
+    
+    function toggleScrollToTop() {
+        const navHeight = nav ? nav.offsetHeight : 68;
+        const scrollY = window.scrollY;
+        
+        if (scrollY > navHeight) {
+            scrollToTopBtn.classList.add('visible');
+        } else {
+            scrollToTopBtn.classList.remove('visible');
+        }
+    }
+    
+    scrollToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    
+    window.addEventListener('scroll', toggleScrollToTop);
+    window.addEventListener('resize', toggleScrollToTop);
+    
+    // Инициализация при загрузке
+    toggleScrollToTop();
+
+    // True infinite carousel with JavaScript logic
+    function initCarousel(carouselId, navId, itemsPerView = 3) {
+        const carousel = document.getElementById(carouselId);
+        const nav = document.getElementById(navId);
+        if (!carousel || !nav) return;
+
+        // Get original items
+        const originalItems = Array.from(carousel.querySelectorAll('.carousel-item'));
+        const totalItems = originalItems.length;
+        if (totalItems === 0) return;
+        
+        // Clone items to create seamless infinite loop
+        // Clone 2 full sets: when we reach end of first set, we seamlessly continue with second
+        originalItems.forEach((item) => {
+            const clone = item.cloneNode(true);
+            clone.classList.add('carousel-clone');
+            carousel.appendChild(clone);
+        });
+        
+        const allItems = carousel.querySelectorAll('.carousel-item');
+        let currentPosition = 0;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartPosition = 0;
+        let animationFrameId = null;
+        let isPaused = false;
+        let lastTime = performance.now();
+
+        // Calculate item width including gap
+        function getItemWidth() {
+            if (allItems.length === 0) return 224;
+            const item = allItems[0];
+            return item.offsetWidth + 24; // width + gap
+        }
+
+        // Calculate total width of one set (original items only)
+        function getSetWidth() {
+            return getItemWidth() * totalItems;
+        }
+
+        // Create navigation dots
+        function createDots() {
+            nav.innerHTML = '';
+            const visibleItems = window.innerWidth <= 640 ? 1 : window.innerWidth <= 980 ? 2 : itemsPerView;
+            const totalSlides = Math.ceil(totalItems / visibleItems);
+            
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('button');
+                dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', `Перейти к слайду ${i + 1}`);
+                dot.addEventListener('click', () => {
+                    pauseAutoScroll();
+                    goToSlide(i);
+                    resumeAutoScroll();
+                });
+                nav.appendChild(dot);
+            }
+        }
+
+        // Update carousel position with infinite loop logic
+        function updatePosition() {
+            const setWidth = getSetWidth();
+            if (setWidth === 0) return;
+            
+            // Infinite loop: when position exceeds one set width, reset to equivalent position in first set
+            // This happens seamlessly because cloned items are identical to original
+            // The reset is instant (no transition) so it's invisible to the user
+            if (currentPosition <= -setWidth) {
+                carousel.style.transition = 'none'; // Instant reset, no animation
+                currentPosition += setWidth; // Reset to equivalent position in first set
+                carousel.style.transform = `translateX(${currentPosition}px)`;
+                // Force reflow to apply the change immediately
+                void carousel.offsetHeight;
+                carousel.style.transition = ''; // Restore transitions for normal scrolling
+            } else {
+                // Normal scrolling with smooth transition
+                carousel.style.transition = 'transform 0.1s linear';
+                carousel.style.transform = `translateX(${currentPosition}px)`;
+            }
+            
+            // Update dots based on position
+            const visibleItems = window.innerWidth <= 640 ? 1 : window.innerWidth <= 980 ? 2 : itemsPerView;
+            const itemWidth = getItemWidth();
+            const totalSlides = Math.ceil(totalItems / visibleItems);
+            const normalizedPosition = ((currentPosition % setWidth) + setWidth) % setWidth;
+            const currentSlide = Math.floor(Math.abs(normalizedPosition) / (itemWidth * visibleItems));
+            const activeDot = currentSlide % totalSlides;
+            
+            nav.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === activeDot);
+            });
+        }
+
+        // Auto-scroll animation loop
+        function animate(currentTime) {
+            if (isPaused || isDragging) {
+                lastTime = currentTime;
+                animationFrameId = requestAnimationFrame(animate);
+                return;
+            }
+            
+            const deltaTime = currentTime - lastTime;
+            lastTime = currentTime;
+            
+            // Move at 20px per second (slow and smooth)
+            const speed = 20; // pixels per second
+            const deltaPosition = -(speed * deltaTime) / 1000;
+            currentPosition += deltaPosition;
+            
+            updatePosition();
+            animationFrameId = requestAnimationFrame(animate);
+        }
+
+        // Pause auto-scroll
+        function pauseAutoScroll() {
+            isPaused = true;
+        }
+
+        // Resume auto-scroll
+        function resumeAutoScroll() {
+            isPaused = false;
+            lastTime = performance.now();
+        }
+
+        // Go to specific slide
+        function goToSlide(index) {
+            const visibleItems = window.innerWidth <= 640 ? 1 : window.innerWidth <= 980 ? 2 : itemsPerView;
+            const itemWidth = getItemWidth();
+            const targetPosition = -(index * visibleItems * itemWidth);
+            currentPosition = targetPosition;
+            updatePosition();
+        }
+
+        // Start auto-scroll
+        function startAutoScroll() {
+            lastTime = performance.now();
+            if (!animationFrameId) {
+                animationFrameId = requestAnimationFrame(animate);
+            }
+        }
+
+        // Mouse drag events
+        carousel.addEventListener('mousedown', (e) => {
+            pauseAutoScroll();
+            isDragging = true;
+            carousel.classList.add('dragging');
+            dragStartX = e.clientX;
+            dragStartPosition = currentPosition;
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.clientX - dragStartX;
+            currentPosition = dragStartPosition + deltaX;
+            updatePosition();
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            carousel.classList.remove('dragging');
+            resumeAutoScroll();
+        });
+
+        // Touch events
+        carousel.addEventListener('touchstart', (e) => {
+            pauseAutoScroll();
+            dragStartX = e.touches[0].clientX;
+            dragStartPosition = currentPosition;
+            isDragging = true;
+            carousel.classList.add('dragging');
+        }, { passive: true });
+
+        carousel.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.touches[0].clientX - dragStartX;
+            currentPosition = dragStartPosition + deltaX;
+            updatePosition();
+        }, { passive: true });
+
+        carousel.addEventListener('touchend', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            carousel.classList.remove('dragging');
+            resumeAutoScroll();
+        }, { passive: true });
+
+        // Pause on hover
+        carousel.addEventListener('mouseenter', pauseAutoScroll);
+        carousel.addEventListener('mouseleave', resumeAutoScroll);
+
+        // Handle resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                pauseAutoScroll();
+                createDots();
+                updatePosition();
+                resumeAutoScroll();
+            }, 250);
+        });
+
+        // Initialize
+        createDots();
+        updatePosition();
+        startAutoScroll();
+    }
+
+    // Initialize carousels after ensuring DOM is ready
+    function initCarousels() {
+        const partnersCarousel = document.getElementById('partnersCarousel');
+        const mentorsCarousel = document.getElementById('mentorsCarousel');
+        
+        if (partnersCarousel && document.getElementById('partnersCarouselNav')) {
+            initCarousel('partnersCarousel', 'partnersCarouselNav', 4);
+        }
+        
+        if (mentorsCarousel && document.getElementById('mentorsCarouselNav')) {
+            initCarousel('mentorsCarousel', 'mentorsCarouselNav', 3);
+        }
+    }
+    
+    // Пытаемся инициализировать несколько раз, пока элементы не появятся
+    let attempts = 0;
+    const maxAttempts = 10;
+    const tryInit = () => {
+        attempts++;
+        const partnersCarousel = document.getElementById('partnersCarousel');
+        const mentorsCarousel = document.getElementById('mentorsCarousel');
+        
+        if ((partnersCarousel && document.getElementById('partnersCarouselNav')) &&
+            (mentorsCarousel && document.getElementById('mentorsCarouselNav'))) {
+            initCarousels();
+        } else if (attempts < maxAttempts) {
+            setTimeout(tryInit, 100);
+        }
+    };
+    
+    tryInit();
+    
+    // Анимация появления элементов при прокрутке
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Наблюдаем за карточками
+    document.querySelectorAll('.about-card, .event-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(card);
+    });
+    };
+    
+    // Выполняем сразу, если DOM готов, иначе ждем DOMContentLoaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        // DOM уже готов, но даем время на рендер элементов
+        setTimeout(init, 0);
+    }
+})();
+
+// Закрытие модального окна по клавише Escape
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const modal = document.getElementById('registrationModal');
+        if (modal.style.display === 'block') {
+            closeModal();
+        }
+    }
+});
+
+/* ====== Подсветка ключевых дат в таймлайне ======
+   Правила:
+   - data-date="YYYY-MM-DD" → активен ровно в этот день
+   - data-start / data-end  → активен, если сегодня в [start, end] (включительно)
+   - иначе элемент помечается как is-past или is-future
+*/
+(function highlightTimelineByDate() {
+    const items = document.querySelectorAll('.dynamic-content-container .timeline .t-item');
+    if (!items.length) return;
+
+    // нормализуем к полуночи локального времени
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    function parseDate(iso) {
+        // ожидаем формат YYYY-MM-DD
+        if (!iso) return null;
+        const [y, m, d] = iso.split('-').map(Number);
+        if (!y || !m || !d) return null;
+        const dt = new Date(y, m - 1, d);
+        dt.setHours(0,0,0,0);
+        return dt;
+    }
+
+    items.forEach(el => {
+        const d = el.dataset.date ? parseDate(el.dataset.date) : null;
+        const s = el.dataset.start ? parseDate(el.dataset.start) : null;
+        const e = el.dataset.end ? parseDate(el.dataset.end) : null;
+
+        // Снимаем возможные предыдущие классы
+        el.classList.remove('is-active', 'is-past', 'is-future');
+
+        let state = 'future';
+
+        if (d) {
+            if (today.getTime() === d.getTime()) state = 'active';
+            else if (today.getTime() > d.getTime()) state = 'past';
+            else state = 'future';
+        } else {
+            const start = s || new Date(-8640000000000000); // мин дата
+            const end   = e || new Date(8640000000000000);  // макс дата
+            if (today >= start && today <= end) state = 'active';
+            else if (today < start) state = 'future';
+            else state = 'past';
+        }
+
+        if (state === 'active') el.classList.add('is-active');
+        else if (state === 'past') el.classList.add('is-past');
+        else el.classList.add('is-future');
+    });
+})();
+    </script>
+    </div>
+</body>
+</html>

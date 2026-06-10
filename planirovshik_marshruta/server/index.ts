@@ -2,7 +2,12 @@ import cors from 'cors'
 import express from 'express'
 import { createHash, randomUUID, timingSafeEqual } from 'node:crypto'
 import { missionKey } from '../shared/terrain.ts'
-import { parseFlightMode, parseRouteCoordinates, validateRoute } from './validateRoute.ts'
+import {
+  parseFlightMode,
+  parseRouteCoordinates,
+  validateRoute,
+  validateRouteGeometry,
+} from './validateRoute.ts'
 
 const app = express()
 const port = Number(process.env.PORT ?? 8787)
@@ -100,7 +105,43 @@ app.post('/api/validate-route', (req, res) => {
 
   res.status(200).json({
     ok: true,
-    message: `Маршрут подтвержден. Длина: ${result.distanceKm.toFixed(3)} км.`,
+    message: `Маршрут подтвержден. Длина: ${result.distanceKm.toFixed(3)} км. Режим в полёте можно менять.`,
+    key: missionKey,
+  })
+})
+
+app.post('/api/claim-mission-key', (req, res) => {
+  const ip = req.ip ?? 'unknown'
+  if (isRateLimited(ip)) {
+    res.status(429).json({ ok: false, message: 'Слишком много попыток. Повторите позже.' })
+    return
+  }
+
+  const token = typeof req.body?.token === 'string' ? req.body.token : ''
+  const expiresAt = token ? activationSessions.get(token) : undefined
+  if (!expiresAt || expiresAt <= Date.now()) {
+    if (token) {
+      activationSessions.delete(token)
+    }
+    res.status(401).json({ ok: false, message: 'Сессия активации истекла. Введите код снова.' })
+    return
+  }
+
+  const route = parseRouteCoordinates(req.body)
+  if (!route) {
+    res.status(400).json({ ok: false, message: 'Некорректный формат маршрута.' })
+    return
+  }
+
+  const result = validateRouteGeometry(route)
+  if (!result.ok) {
+    res.status(200).json({ ok: false, message: result.reason })
+    return
+  }
+
+  res.status(200).json({
+    ok: true,
+    message: `Миссия выполнена. Длина: ${result.distanceKm.toFixed(3)} км.`,
     key: missionKey,
   })
 })

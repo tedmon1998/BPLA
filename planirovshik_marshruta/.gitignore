@@ -5,6 +5,7 @@ node_modules/
 /dist/
 /dist-ssr/
 /dist-server/
+/exe/
 /release-server-api/
 /release-portable/
 /release-portable*/

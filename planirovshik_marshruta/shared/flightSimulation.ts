@@ -32,6 +32,19 @@ export type FlightSimulationResult = {
 
 export type FlightMode = 'slow' | 'normal' | 'sport'
 
+export type FlightSimulationResume = {
+  batteryKm: number
+  elapsedMin: number
+  rechargeCount: number
+  chargedZoneIds: readonly string[]
+}
+
+export type SimulateFlightOptions = {
+  mode?: FlightMode
+  resume?: FlightSimulationResume
+  skipRoutePreflight?: boolean
+}
+
 type ModeProfile = {
   speedMultiplier: number
   energyMultiplier: number
@@ -71,6 +84,235 @@ function pointInAnyZone(pos: LatLng, zones: { zone: CircleZone; polygon: ReturnT
   return null
 }
 
+function chargingZoneAt(pos: LatLng): CircleZone | null {
+  return pointInAnyZone(pos, chargingPolygons)
+}
+
+export function countRechargesInFrames(frames: FlightFrame[]): number {
+  let count = 0
+  let inCharge = false
+  for (const frame of frames) {
+    if (frame.phase === 'charging' && !inCharge) {
+      count += 1
+    }
+    inCharge = frame.phase === 'charging'
+  }
+  return count
+}
+
+export function collectChargedZoneIds(frames: FlightFrame[]): string[] {
+  const ids = new Set<string>()
+  let inCharge = false
+  for (const frame of frames) {
+    if (frame.phase === 'charging') {
+      if (!inCharge) {
+        const zone = chargingZoneAt(frame.position)
+        if (zone) ids.add(zone.id)
+      }
+      inCharge = true
+    } else {
+      inCharge = false
+    }
+  }
+  return [...ids]
+}
+
+function projectOnSegment(p: LatLng, a: LatLng, b: LatLng): number {
+  const dx = b[0] - a[0]
+  const dy = b[1] - a[1]
+  const len2 = dx * dx + dy * dy
+  if (len2 === 0) return 0
+  const t = ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / len2
+  return Math.max(0, Math.min(1, t))
+}
+
+function dist2(a: LatLng, b: LatLng): number {
+  const dx = a[0] - b[0]
+  const dy = a[1] - b[1]
+  return dx * dx + dy * dy
+}
+
+/** Оставшийся маршрут от текущей позиции дрона до финиша. */
+export function sliceRouteFromPosition(route: LatLng[], position: LatLng): LatLng[] {
+  if (route.length === 0) return []
+  if (route.length === 1) return [position]
+
+  let bestSegment = 0
+  let bestT = 0
+  let bestDist = Infinity
+
+  for (let i = 0; i < route.length - 1; i += 1) {
+    const t = projectOnSegment(position, route[i], route[i + 1])
+    const projected = interpolate(route[i], route[i + 1], t)
+    const dist = dist2(position, projected)
+    if (dist < bestDist) {
+      bestDist = dist
+      bestSegment = i
+      bestT = t
+    }
+  }
+
+  const startIndex = bestT >= 0.999 ? bestSegment + 1 : bestSegment + 1
+  const rest = route.slice(startIndex)
+  if (rest.length === 0) return [position]
+  if (dist2(position, rest[0]) < 1e-8) return rest
+  return [position, ...rest]
+}
+
+function findChargingBlockBounds(frames: FlightFrame[], index: number) {
+  let start = index
+  while (start > 0 && frames[start - 1]?.phase === 'charging') start -= 1
+  let end = index
+  while (end + 1 < frames.length && frames[end + 1]?.phase === 'charging') end += 1
+  const totalTicks = end - start + 1
+  const completedTicks = index - start + 1
+  const remainingTicks = Math.max(0, totalTicks - completedTicks)
+  return { start, end, totalTicks, remainingTicks }
+}
+
+function synthesizeRemainingChargeFrames(
+  currentFrame: FlightFrame,
+  remainingTicks: number,
+  totalTicks: number,
+): FlightFrame[] {
+  if (remainingTicks <= 0 || totalTicks <= 0) return []
+
+  const batteryAtStart = currentFrame.batteryKm
+  const targetBattery = missionRules.batteryCapacityKm
+  const pos = currentFrame.position
+  let elapsed = currentFrame.elapsedMin
+  const minutesPerTick = missionRules.chargingMinutes / totalTicks
+  const frames: FlightFrame[] = []
+
+  for (let tick = 1; tick <= remainingTicks; tick += 1) {
+    const t = tick / remainingTicks
+    elapsed += minutesPerTick
+    const batteryKm = Math.min(targetBattery, batteryAtStart + (targetBattery - batteryAtStart) * t)
+    frames.push({
+      position: pos,
+      batteryKm,
+      elapsedMin: elapsed,
+      speedKmh: 0,
+      phase: 'charging',
+    })
+  }
+
+  return frames
+}
+
+function mergeContinuation(
+  fullRoute: LatLng[],
+  played: FlightFrame[],
+  resumeFrame: FlightFrame,
+  mode: FlightMode,
+): FlightSimulationResult {
+  const remainingRoute = sliceRouteFromPosition(fullRoute, resumeFrame.position)
+  if (remainingRoute.length < 2) {
+    return {
+      ok: played.length > 0,
+      reason: 'Полет завершен.',
+      frames: played,
+      distanceKm: length(lineString(fullRoute.map(toLngLat)), { units: 'kilometers' }),
+      rechargeCount: countRechargesInFrames(played),
+      elapsedMin: resumeFrame.elapsedMin,
+    }
+  }
+
+  const continuation = simulateFlight(remainingRoute, {
+    mode,
+    skipRoutePreflight: true,
+    resume: {
+      batteryKm: resumeFrame.batteryKm,
+      elapsedMin: resumeFrame.elapsedMin,
+      rechargeCount: countRechargesInFrames(played),
+      chargedZoneIds: collectChargedZoneIds(played),
+    },
+  })
+
+  const mergedFrames = [...played, ...continuation.frames.slice(1)]
+  return {
+    ...continuation,
+    frames: mergedFrames,
+    distanceKm: length(lineString(fullRoute.map(toLngLat)), { units: 'kilometers' }),
+  }
+}
+
+export function continueFlightFromFrame(
+  fullRoute: LatLng[],
+  playedFrames: FlightFrame[],
+  flightIndex: number,
+  mode: FlightMode,
+): FlightSimulationResult {
+  const currentFrame = playedFrames[flightIndex]
+  if (!currentFrame) {
+    return {
+      ok: false,
+      reason: 'Не удалось продолжить полет: нет текущего кадра.',
+      frames: playedFrames,
+      distanceKm: 0,
+      rechargeCount: 0,
+      elapsedMin: 0,
+    }
+  }
+
+  const played = playedFrames.slice(0, flightIndex + 1)
+  return mergeContinuation(fullRoute, played, currentFrame, mode)
+}
+
+export function continueFlightWithMode(
+  fullRoute: LatLng[],
+  playedFrames: FlightFrame[],
+  flightIndex: number,
+  nextMode: FlightMode,
+): FlightSimulationResult {
+  const currentFrame = playedFrames[flightIndex]
+  if (!currentFrame) {
+    return {
+      ok: false,
+      reason: 'Не удалось переключить режим: нет текущего кадра полета.',
+      frames: playedFrames,
+      distanceKm: 0,
+      rechargeCount: 0,
+      elapsedMin: 0,
+    }
+  }
+
+  if (currentFrame.phase === 'charging') {
+    const { remainingTicks, totalTicks } = findChargingBlockBounds(playedFrames, flightIndex)
+    const remainingChargeFrames = synthesizeRemainingChargeFrames(currentFrame, remainingTicks, totalTicks)
+    const played = [...playedFrames.slice(0, flightIndex + 1), ...remainingChargeFrames]
+    const resumeFrame = remainingChargeFrames.length > 0
+      ? remainingChargeFrames[remainingChargeFrames.length - 1]!
+      : currentFrame
+
+    if (resumeFrame.elapsedMin > missionRules.missionTimeLimitMin) {
+      return {
+        ok: false,
+        reason: `Груз не доставлен: на зарядке потеряно время, лимит ${missionRules.missionTimeLimitMin} мин.`,
+        frames: played,
+        distanceKm: length(lineString(fullRoute.map(toLngLat)), { units: 'kilometers' }),
+        rechargeCount: countRechargesInFrames(played),
+        elapsedMin: resumeFrame.elapsedMin,
+      }
+    }
+
+    return mergeContinuation(fullRoute, played, resumeFrame, nextMode)
+  }
+
+  return continueFlightFromFrame(fullRoute, playedFrames, flightIndex, nextMode)
+}
+
+export function interruptChargingAt(
+  fullRoute: LatLng[],
+  playedFrames: FlightFrame[],
+  flightIndex: number,
+  mode: FlightMode,
+): FlightSimulationResult | null {
+  const currentFrame = playedFrames[flightIndex]
+  if (!currentFrame || currentFrame.phase !== 'charging') return null
+  return continueFlightFromFrame(fullRoute, playedFrames, flightIndex, mode)
+}
+
 function windMultiplierAt(pos: LatLng): number {
   const p = point(toLngLat(pos))
   let multiplier = 1
@@ -84,10 +326,12 @@ function windMultiplierAt(pos: LatLng): number {
 
 export function simulateFlight(
   route: LatLng[],
-  options?: { mode?: FlightMode },
+  options?: SimulateFlightOptions,
 ): FlightSimulationResult {
   const flightMode = options?.mode ?? 'normal'
   const mode = modeProfiles[flightMode]
+  const resume = options?.resume
+  const skipRoutePreflight = options?.skipRoutePreflight ?? false
 
   if (route.length < 2) {
     return {
@@ -103,52 +347,59 @@ export function simulateFlight(
   const totalLine = lineString(route.map(toLngLat))
   const totalDistanceKm = length(totalLine, { units: 'kilometers' })
 
-  for (const item of noFlyPolygons) {
-    if (booleanIntersects(totalLine, item.polygon)) {
-      return {
-        ok: false,
-        reason: `Дрон не долетел: маршрут пересекает бесполетную зону "${item.zone.label}".`,
-        frames: [
-          {
-            position: route[0],
-            batteryKm: missionRules.batteryCapacityKm,
-            elapsedMin: 0,
-            speedKmh: 0,
-            phase: 'flight',
-          },
-        ],
-        distanceKm: totalDistanceKm,
-        rechargeCount: 0,
-        elapsedMin: 0,
+  if (!skipRoutePreflight) {
+    for (const item of noFlyPolygons) {
+      if (booleanIntersects(totalLine, item.polygon)) {
+        return {
+          ok: false,
+          reason: `Дрон не долетел: маршрут пересекает бесполетную зону "${item.zone.label}".`,
+          frames: [
+            {
+              position: route[0],
+              batteryKm: missionRules.batteryCapacityKm,
+              elapsedMin: 0,
+              speedKmh: 0,
+              phase: 'flight',
+            },
+          ],
+          distanceKm: totalDistanceKm,
+          rechargeCount: 0,
+          elapsedMin: 0,
+        }
+      }
+    }
+
+    for (const item of obstaclePolygons) {
+      if (booleanIntersects(totalLine, item.polygon)) {
+        return {
+          ok: false,
+          reason: `Дрон не долетел: путь пересекает препятствие "${item.zone.label}".`,
+          frames: [
+            {
+              position: route[0],
+              batteryKm: missionRules.batteryCapacityKm,
+              elapsedMin: 0,
+              speedKmh: 0,
+              phase: 'flight',
+            },
+          ],
+          distanceKm: totalDistanceKm,
+          rechargeCount: 0,
+          elapsedMin: 0,
+        }
       }
     }
   }
 
-  for (const item of obstaclePolygons) {
-    if (booleanIntersects(totalLine, item.polygon)) {
-      return {
-        ok: false,
-        reason: `Дрон не долетел: путь пересекает препятствие "${item.zone.label}".`,
-        frames: [
-          {
-            position: route[0],
-            batteryKm: missionRules.batteryCapacityKm,
-            elapsedMin: 0,
-            speedKmh: 0,
-            phase: 'flight',
-          },
-        ],
-        distanceKm: totalDistanceKm,
-        rechargeCount: 0,
-        elapsedMin: 0,
-      }
-    }
-  }
-
-  let batteryKm = missionRules.batteryCapacityKm
-  let elapsedMin = 0
-  let rechargeCount = 0
+  let batteryKm = resume?.batteryKm ?? missionRules.batteryCapacityKm
+  let elapsedMin = resume?.elapsedMin ?? 0
+  let rechargeCount = resume?.rechargeCount ?? 0
   let activeChargingZoneId: string | null = null
+  const startChargingZone = chargingZoneAt(route[0])
+  if (startChargingZone) {
+    activeChargingZoneId = startChargingZone.id
+  }
+
   const frames: FlightFrame[] = [
     {
       position: route[0],
