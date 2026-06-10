@@ -1,14 +1,17 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import './App.css'
-
-const TARGET_FREQ = 145
-const TARGET_CHANNEL = 23
-const TARGET_GAIN = 75
-const TOLERANCE = 5
 
 const FREQ_RANGE = { min: 100, max: 200 }
 const CHANNEL_RANGE = { min: 1, max: 50 }
 const GAIN_RANGE = { min: 0, max: 100 }
+
+const TARGET_LIMITS = {
+  frequency: { min: 112, max: 188 },
+  channel: { min: 7, max: 44 },
+  gain: { min: 18, max: 92 },
+  bandwidth: { min: 12, max: 88 },
+  tolerance: { min: 3, max: 6 },
+}
 
 const OBFUSCATED_COORDS = {
   lat: 'NjEuMDA=',
@@ -19,9 +22,154 @@ const ACCESS_KEY = 'YUGRA-SIGNAL-2024'
 const ACTIVATION_HASH = 49346375253
 const SESSION_DURATION_SECONDS = 20 * 60
 
+const STR = {
+  activationError:
+    '\u041d\u0435\u0432\u0435\u0440\u043d\u044b\u0439 \u043a\u043e\u0434 \u0430\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u0438.',
+  noSignal:
+    '\u041d\u0435\u0442 \u0441\u0438\u0433\u043d\u0430\u043b\u0430. \u0421\u043d\u0430\u0447\u0430\u043b\u0430 \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u0442\u0435 \u0440\u0430\u0434\u0438\u043e\u043c\u0438\u043a\u0448\u0435\u0440.',
+  activationTitle: '\u0410\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u044f \u0441\u0442\u0430\u043d\u0446\u0438\u0438',
+  activationHint:
+    '\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u043a\u043e\u0434 \u0430\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u0438 \u0434\u043b\u044f \u043d\u0430\u0447\u0430\u043b\u0430 \u043f\u043e\u043f\u044b\u0442\u043a\u0438.',
+  activationPlaceholder: '\u041a\u043e\u0434 \u0430\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u0438',
+  activate: '\u0410\u043a\u0442\u0438\u0432\u0438\u0440\u043e\u0432\u0430\u0442\u044c',
+  sessionTime: '\u0412\u0440\u0435\u043c\u044f \u043f\u043e\u043f\u044b\u0442\u043a\u0438:',
+  endAttempt: '\u0417\u0430\u043a\u043e\u043d\u0447\u0438\u0442\u044c \u043f\u043e\u043f\u044b\u0442\u043a\u0443',
+  mixerTitle: '\u0420\u0430\u0434\u0438\u043e\u043c\u0438\u043a\u0448\u0435\u0440 \u00b7 SmartMixer',
+  stationStatus:
+    '\u0421\u0422\u0410\u041d\u0426\u0418\u042f \u21165 \u00b7 \u0420\u0410\u0414\u0418\u041e\u041c\u0418\u041a\u0428\u0415\u0420',
+  channelRestored: '\u041a\u0410\u041d\u0410\u041b \u0412\u041e\u0421\u0421\u0422\u0410\u041d\u041e\u0412\u041b\u0415\u041d',
+  searching: '\u041f\u041e\u0418\u0421\u041a \u0421\u0418\u0413\u041d\u0410\u041b\u0410...',
+  taskBlocked:
+    '\u0417\u0430\u0434\u0430\u043d\u0438\u0435 \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u043e. \u041d\u0430\u0441\u0442\u0440\u043e\u0439\u0442\u0435 \u0440\u0430\u0434\u0438\u043e\u043c\u0438\u043a\u0448\u0435\u0440, \u0447\u0442\u043e\u0431\u044b \u043f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u043a\u043e\u043e\u0440\u0434\u0438\u043d\u0430\u0442\u044b \u0442\u043e\u0447\u043a\u0438 \u043a\u043e\u043d\u0444\u043b\u044e\u044d\u043d\u0446\u0438\u0438.',
+  tuneHint:
+    '\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u0442\u0435 \u0447\u0430\u0441\u0442\u043e\u0442\u0443, \u043a\u0430\u043d\u0430\u043b, \u0443\u0441\u0438\u043b\u0435\u043d\u0438\u0435 \u0438 \u043f\u043e\u043b\u043e\u0441\u0443 \u0434\u043b\u044f \u043e\u0447\u0438\u0441\u0442\u043a\u0438 \u0441\u0438\u0433\u043d\u0430\u043b\u0430.',
+  attention: '\u0412\u041d\u0418\u041c\u0410\u041d\u0418\u0415: \u041a\u0410\u041d\u0410\u041b \u0412\u041e\u0421\u0421\u0422\u0410\u041d\u041e\u0412\u041b\u0415\u041d',
+  taskBody1:
+    '\u0414\u043b\u044f \u043f\u043e\u043b\u0443\u0447\u0435\u043d\u0438\u044f \u043a\u043b\u044e\u0447\u0430 \u0434\u043e\u0441\u0442\u0443\u043f\u0430 \u043d\u0430\u0439\u0434\u0438\u0442\u0435 \u0431\u043b\u0438\u0436\u0430\u0439\u0448\u0443\u044e \u0442\u043e\u0447\u043a\u0443 \u043a\u043e\u043d\u0444\u043b\u044e\u044d\u043d\u0446\u0438\u0438.',
+  taskBody2:
+    '\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0435\u0451 \u043a\u043e\u043e\u0440\u0434\u0438\u043d\u0430\u0442\u044b \u0432 \u043f\u043e\u043b\u044f \u043d\u0438\u0436\u0435.',
+  requirements: '\u0422\u0440\u0435\u0431\u043e\u0432\u0430\u043d\u0438\u044f:',
+  reqFormat:
+    '\u0424\u043e\u0440\u043c\u0430\u0442: \u0434\u0435\u0441\u044f\u0442\u0438\u0447\u043d\u044b\u0435 \u0433\u0440\u0430\u0434\u0443\u0441\u044b (DD).',
+  reqPrecision:
+    '\u0422\u043e\u0447\u043d\u043e\u0441\u0442\u044c: \u0440\u043e\u0432\u043d\u043e 2 \u0437\u043d\u0430\u043a\u0430 \u043f\u043e\u0441\u043b\u0435 \u0437\u0430\u043f\u044f\u0442\u043e\u0439.',
+  reqExample: '\u041f\u0440\u0438\u043c\u0435\u0440: 55.75, 37.61',
+  coordsCheck: '\u041f\u0440\u043e\u0432\u0435\u0440\u043a\u0430 \u043a\u043e\u043e\u0440\u0434\u0438\u043d\u0430\u0442',
+  lat: '\u0428\u0438\u0440\u043e\u0442\u0430 (Lat)',
+  lon: '\u0414\u043e\u043b\u0433\u043e\u0442\u0430 (Lon)',
+  noSignalShort: '\u041d\u0435\u0442 \u0441\u0438\u0433\u043d\u0430\u043b\u0430',
+  submitCoords: '\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c \u043a\u043e\u043e\u0440\u0434\u0438\u043d\u0430\u0442\u044b',
+  coordsConfirmed: '\u041a\u043e\u043e\u0440\u0434\u0438\u043d\u0430\u0442\u044b \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u044b',
+  accessKey: '\u041a\u043b\u044e\u0447 \u0434\u043e\u0441\u0442\u0443\u043f\u0430:',
+  modalCloseIn: '\u041e\u043a\u043d\u043e \u0437\u0430\u043a\u0440\u043e\u0435\u0442\u0441\u044f \u0447\u0435\u0440\u0435\u0437',
+  seconds: '\u0441\u0435\u043a.',
+  close: '\u0417\u0430\u043a\u0440\u044b\u0442\u044c',
+  tuningTitle: '\u0414\u0438\u0430\u0433\u043d\u043e\u0441\u0442\u0438\u043a\u0430 \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438',
+  freqOk: '\u0427\u0430\u0441\u0442\u043e\u0442\u0430 \u0432 \u043d\u043e\u0440\u043c\u0435',
+  freqClose: '\u0427\u0430\u0441\u0442\u043e\u0442\u0430 \u0431\u043b\u0438\u0437\u043a\u043e',
+  freqFar: '\u0427\u0430\u0441\u0442\u043e\u0442\u0430 \u0434\u0430\u043b\u0435\u043a\u043e',
+  channelOk: '\u041a\u0430\u043d\u0430\u043b \u0441\u0442\u0430\u0431\u0438\u043b\u0435\u043d',
+  channelBad: '\u041a\u0430\u043d\u0430\u043b \u043d\u0435\u0441\u0442\u0430\u0431\u0438\u043b\u0435\u043d',
+  gainOk: '\u0423\u0441\u0438\u043b\u0435\u043d\u0438\u0435 \u0434\u043e\u0441\u0442\u0430\u0442\u043e\u0447\u043d\u043e',
+  gainBad: '\u0423\u0441\u0438\u043b\u0435\u043d\u0438\u0435 \u043d\u0435\u0434\u043e\u0441\u0442\u0430\u0442\u043e\u0447\u043d\u043e',
+  bandwidthOk:
+    '\u041f\u043e\u043b\u043e\u0441\u0430 \u043f\u0440\u0438\u043d\u044f\u0442\u0430',
+  bandwidthClose:
+    '\u041f\u043e\u043b\u043e\u0441\u0430 \u0431\u043b\u0438\u0437\u043a\u043e',
+  bandwidthFar:
+    '\u041f\u043e\u043b\u043e\u0441\u0430 \u0448\u0443\u043c\u0438\u0442',
+} as const
+
 const decodeCoordinate = (value: string) => Number(atob(value))
 const hashCode = (value: string) =>
   value.split('').reduce((acc, char) => acc * 31 + char.charCodeAt(0), 0)
+
+type HintLevel = 'ok' | 'warn' | 'bad'
+
+type TuningHint = {
+  id: 'frequency' | 'channel' | 'gain' | 'bandwidth'
+  label: string
+  text: string
+  level: HintLevel
+}
+
+type MixerId = TuningHint['id']
+
+type TargetProfile = {
+  frequency: number
+  channel: number
+  gain: number
+  bandwidth: number
+  tolerance: number
+}
+
+const randomInt = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min + 1)) + min
+
+const createTargetProfile = (): TargetProfile => ({
+  frequency: randomInt(TARGET_LIMITS.frequency.min, TARGET_LIMITS.frequency.max),
+  channel: randomInt(TARGET_LIMITS.channel.min, TARGET_LIMITS.channel.max),
+  gain: randomInt(TARGET_LIMITS.gain.min, TARGET_LIMITS.gain.max),
+  bandwidth: randomInt(TARGET_LIMITS.bandwidth.min, TARGET_LIMITS.bandwidth.max),
+  tolerance: randomInt(TARGET_LIMITS.tolerance.min, TARGET_LIMITS.tolerance.max),
+})
+
+const getFrequencyHint = (deviation: number, tolerance: number): TuningHint => {
+  if (deviation <= tolerance) {
+    return { id: 'frequency', label: 'FREQUENCY', text: STR.freqOk, level: 'ok' }
+  }
+  if (deviation <= tolerance * 2) {
+    return {
+      id: 'frequency',
+      label: 'FREQUENCY',
+      text: STR.freqClose,
+      level: 'warn',
+    }
+  }
+  return { id: 'frequency', label: 'FREQUENCY', text: STR.freqFar, level: 'bad' }
+}
+
+const getChannelHint = (deviation: number, tolerance: number): TuningHint => {
+  if (deviation <= tolerance) {
+    return { id: 'channel', label: 'CHANNEL', text: STR.channelOk, level: 'ok' }
+  }
+  return { id: 'channel', label: 'CHANNEL', text: STR.channelBad, level: 'bad' }
+}
+
+const getGainHint = (deviation: number, tolerance: number): TuningHint => {
+  if (deviation <= tolerance) {
+    return { id: 'gain', label: 'GAIN', text: STR.gainOk, level: 'ok' }
+  }
+  return { id: 'gain', label: 'GAIN', text: STR.gainBad, level: 'bad' }
+}
+
+const getBandwidthHint = (deviation: number, tolerance: number): TuningHint => {
+  if (deviation <= tolerance) {
+    return {
+      id: 'bandwidth',
+      label: 'BANDWIDTH',
+      text: STR.bandwidthOk,
+      level: 'ok',
+    }
+  }
+  if (deviation <= tolerance * 2) {
+    return {
+      id: 'bandwidth',
+      label: 'BANDWIDTH',
+      text: STR.bandwidthClose,
+      level: 'warn',
+    }
+  }
+  return {
+    id: 'bandwidth',
+    label: 'BANDWIDTH',
+    text: STR.bandwidthFar,
+    level: 'bad',
+  }
+}
+
+const deviationToNoise = (deviation: number, span: number) =>
+  Math.min(100, Math.round((deviation / span) * 100))
 
 type KnobProps = {
   label: string
@@ -36,6 +184,9 @@ type KnobProps = {
 function Knob({ label, value, min, max, onChange, unit, className }: KnobProps) {
   const percent = ((value - min) / (max - min)) * 100
   const rotation = -130 + percent * 2.6
+  const handleRangeInput = (event: React.FormEvent<HTMLInputElement>) => {
+    onChange(Number(event.currentTarget.value))
+  }
 
   return (
     <label className={`knob-control ${className ?? ''}`.trim()}>
@@ -55,7 +206,8 @@ function Knob({ label, value, min, max, onChange, unit, className }: KnobProps) 
         min={min}
         max={max}
         value={value}
-        onChange={(event) => onChange(Number(event.target.value))}
+        onInput={handleRangeInput}
+        onChange={handleRangeInput}
       />
     </label>
   )
@@ -80,11 +232,13 @@ function App() {
     'scan',
   )
   const [bandwidth, setBandwidth] = useState(42)
+  const [targetProfile, setTargetProfile] = useState(createTargetProfile)
 
   const targetLat = useMemo(() => decodeCoordinate(OBFUSCATED_COORDS.lat), [])
   const targetLon = useMemo(() => decodeCoordinate(OBFUSCATED_COORDS.lon), [])
 
-  const resetRound = () => {
+  const resetRound = useCallback(() => {
+    setTargetProfile(createTargetProfile())
     setFrequency(120)
     setChannel(8)
     setGain(30)
@@ -95,35 +249,78 @@ function App() {
     setMessage('')
     setIsSuccess(false)
     setSecondsLeft(10)
-  }
+  }, [])
 
-  const endAttempt = () => {
+  const endAttempt = useCallback(() => {
     resetRound()
     setActivationInput('')
     setActivationError('')
     setIsActivated(false)
     setSessionSecondsLeft(SESSION_DURATION_SECONDS)
-  }
+  }, [resetRound])
 
-  const noiseLevel = useMemo(() => {
-    const freqDeviation = Math.abs(frequency - TARGET_FREQ)
-    const channelDeviation = Math.abs(channel - TARGET_CHANNEL)
-    const gainDeviation = Math.abs(gain - TARGET_GAIN)
+  const signalDiagnostics = useMemo(() => {
+    const freqDeviation = Math.abs(frequency - targetProfile.frequency)
+    const channelDeviation = Math.abs(channel - targetProfile.channel)
+    const gainDeviation = Math.abs(gain - targetProfile.gain)
+    const bandwidthDeviation = Math.abs(bandwidth - targetProfile.bandwidth)
 
-    const maxBeyondTolerance =
-      Math.max(
-        0,
-        freqDeviation - TOLERANCE,
-        channelDeviation - TOLERANCE,
-        gainDeviation - TOLERANCE,
-      ) * 10
+    const tolerance = targetProfile.tolerance
+    const isSignalLocked =
+      freqDeviation <= tolerance &&
+      channelDeviation <= tolerance &&
+      gainDeviation <= tolerance &&
+      bandwidthDeviation <= tolerance
 
-    return Math.min(100, Math.round(maxBeyondTolerance))
-  }, [frequency, channel, gain])
+    const noiseLevel = isSignalLocked
+      ? 0
+      : Math.round(
+          Math.max(
+            deviationToNoise(freqDeviation, 42),
+            deviationToNoise(channelDeviation, 14),
+            deviationToNoise(gainDeviation, 28),
+            deviationToNoise(bandwidthDeviation, 28),
+          ),
+        )
 
-  const isSignalLocked = noiseLevel === 0
-  const isFrequencyAligned = Math.abs(frequency - TARGET_FREQ) <= TOLERANCE
+    return {
+      freqDeviation,
+      channelDeviation,
+      gainDeviation,
+      bandwidthDeviation,
+      noiseLevel,
+      isSignalLocked,
+      tuningHints: [
+        getFrequencyHint(freqDeviation, targetProfile.tolerance),
+        getChannelHint(channelDeviation, targetProfile.tolerance),
+        getGainHint(gainDeviation, targetProfile.tolerance),
+        getBandwidthHint(bandwidthDeviation, targetProfile.tolerance),
+      ],
+    }
+  }, [frequency, channel, gain, bandwidth, targetProfile])
+
+  const { noiseLevel, isSignalLocked, tuningHints } = signalDiagnostics
+  const isFrequencyAligned =
+    Math.abs(frequency - targetProfile.frequency) <= targetProfile.tolerance
   const signalStrength = 100 - noiseLevel
+  const noiseOpacity = 0.1 + (noiseLevel / 100) * 0.9
+  const noiseSpeed = `${Math.max(0.04, 0.32 - (noiseLevel / 100) * 0.26)}s`
+
+  const updateMixer = (id: MixerId, value: number) => {
+    if (id === 'frequency') {
+      setFrequency(value)
+      return
+    }
+    if (id === 'channel') {
+      setChannel(value)
+      return
+    }
+    if (id === 'gain') {
+      setGain(value)
+      return
+    }
+    setBandwidth(value)
+  }
 
   const validateTwoDecimals = (value: string) =>
     /^-?\d+\.\d{2}$/.test(value.trim())
@@ -145,14 +342,14 @@ function App() {
       resetRound()
       return
     }
-    setActivationError('Неверный код активации.')
+    setActivationError(STR.activationError)
   }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     if (!isSignalLocked) {
-      setMessage('Нет сигнала. Сначала настройте радиомикшер.')
+      setMessage(STR.noSignal)
       return
     }
 
@@ -173,6 +370,7 @@ function App() {
     const isLonValid = Math.abs(parsedLon - targetLon) <= 0.01
 
     if (isLatValid && isLonValid) {
+      setSecondsLeft(10)
       setIsSuccess(true)
       setMessage('')
       return
@@ -186,12 +384,11 @@ function App() {
       return
     }
 
-    setSecondsLeft(10)
     const timerId = window.setInterval(() => {
       setSecondsLeft((prev) => {
         if (prev <= 1) {
           window.clearInterval(timerId)
-              resetRound()
+          resetRound()
           return 10
         }
         return prev - 1
@@ -199,7 +396,7 @@ function App() {
     }, 1000)
 
     return () => window.clearInterval(timerId)
-  }, [isSuccess])
+  }, [isSuccess, resetRound])
 
   useEffect(() => {
     if (!isActivated) {
@@ -218,22 +415,22 @@ function App() {
     }, 1000)
 
     return () => window.clearInterval(timerId)
-  }, [isActivated])
+  }, [isActivated, endAttempt])
 
   if (!isActivated) {
     return (
       <main className="mixer-app">
         <section className="activation-panel">
-          <h1>Активация станции</h1>
-          <p>Введите код активации для начала попытки.</p>
+          <h1>{STR.activationTitle}</h1>
+          <p>{STR.activationHint}</p>
           <form onSubmit={handleActivate}>
             <input
               type="password"
               value={activationInput}
               onChange={(event) => setActivationInput(event.target.value)}
-              placeholder="Код активации"
+              placeholder={STR.activationPlaceholder}
             />
-            <button type="submit">Активировать</button>
+            <button type="submit">{STR.activate}</button>
           </form>
           {activationError && <p className="message">{activationError}</p>}
         </section>
@@ -245,13 +442,15 @@ function App() {
     <main className={`mixer-app ${isSignalLocked ? 'locked' : ''}`}>
       <section className="panel">
         <div className="session-bar">
-          <span>Время попытки: {formatSessionTime(sessionSecondsLeft)}</span>
+          <span>
+            {STR.sessionTime} {formatSessionTime(sessionSecondsLeft)}
+          </span>
           <button type="button" onClick={endAttempt}>
-            Закончить попытку
+            {STR.endAttempt}
           </button>
         </div>
         <div className="controls">
-          <h2>Радиомикшер · SmartMixer</h2>
+          <h2>{STR.mixerTitle}</h2>
           <div className="mixer-chassis">
             <Knob
               label="FREQUENCY"
@@ -259,7 +458,7 @@ function App() {
               min={FREQ_RANGE.min}
               max={FREQ_RANGE.max}
               unit=" MHz"
-              onChange={setFrequency}
+              onChange={(value) => updateMixer('frequency', value)}
               className="knob-freq"
             />
             <div className="mixer-display">
@@ -271,6 +470,8 @@ function App() {
                 <strong>{channel}</strong>
                 <span>GAIN</span>
                 <strong>{gain}%</strong>
+                <span>BW</span>
+                <strong>{bandwidth}%</strong>
               </div>
             </div>
             <Knob
@@ -278,7 +479,7 @@ function App() {
               value={channel}
               min={CHANNEL_RANGE.min}
               max={CHANNEL_RANGE.max}
-              onChange={setChannel}
+              onChange={(value) => updateMixer('channel', value)}
               className="knob-channel"
             />
             <div className="mixer-buttons">
@@ -317,7 +518,7 @@ function App() {
               min={GAIN_RANGE.min}
               max={GAIN_RANGE.max}
               unit="%"
-              onChange={setGain}
+              onChange={(value) => updateMixer('gain', value)}
               className="knob-gain"
             />
             <Knob
@@ -326,27 +527,33 @@ function App() {
               min={0}
               max={100}
               unit="%"
-              onChange={setBandwidth}
+              onChange={(value) => updateMixer('bandwidth', value)}
               className="knob-bandwidth"
             />
           </div>
         </div>
 
-        <section className="signal-stage">
+        <section
+          className={`signal-stage ${isSignalLocked ? 'signal-stage-locked' : ''}`}
+          style={
+            {
+              '--noise-level': noiseLevel,
+              '--noise-opacity': noiseOpacity,
+              '--noise-speed': noiseSpeed,
+            } as React.CSSProperties
+          }
+        >
           <div className="stage-content">
             <div className="hud-row">
-              <p className="status">СТАНЦИЯ №5 · РАДИОМИКШЕР</p>
+              <p className="status">{STR.stationStatus}</p>
               <span className={`lock-pill ${isSignalLocked ? 'live' : ''}`}>
                 {isSignalLocked ? 'LINK SECURED' : 'SIGNAL UNSTABLE'}
               </span>
             </div>
-            <h1>{isSignalLocked ? 'КАНАЛ ВОССТАНОВЛЕН' : 'ПОИСК СИГНАЛА...'}</h1>
+            <h1>{isSignalLocked ? STR.channelRestored : STR.searching}</h1>
           </div>
-          <div
-            className="noise-layer"
-            aria-hidden="true"
-            style={{ opacity: noiseLevel / 100 }}
-          />
+          <div className="noise-layer noise-layer-primary" aria-hidden="true" />
+          <div className="noise-layer noise-layer-static" aria-hidden="true" />
         </section>
 
         <div className="signal-meter">
@@ -361,46 +568,61 @@ function App() {
           </div>
         </div>
 
+        <div className="tuning-hints">
+          <div className="tuning-hints-header">
+            <span>{STR.tuningTitle}</span>
+          </div>
+          <div className="tuning-hints-grid">
+            {tuningHints.map((hint) => (
+              <div
+                key={hint.id}
+                className={`tuning-hint tuning-hint-${hint.level}`}
+              >
+                <span className="tuning-hint-label">{hint.label}</span>
+                <span className="tuning-hint-text">{hint.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {!isSignalLocked ? (
           <div className="blocked-task">
-            <p>Текст задания недоступен.</p>
-            <p>Настройте частоту, канал и усиление для очистки сигнала.</p>
+            <p>{STR.taskBlocked}</p>
+            <p>{STR.tuneHint}</p>
           </div>
         ) : (
           <article className="task">
-            <p className="attention">ВНИМАНИЕ: КАНАЛ ВОССТАНОВЛЕН</p>
-            <p>
-              Для получения ключа доступа подтвердите свое местоположение.
-              Введите координаты здания, в котором вы сейчас находитесь.
-            </p>
-            <p>Требования:</p>
+            <p className="attention">{STR.attention}</p>
+            <p>{STR.taskBody1}</p>
+            <p>{STR.taskBody2}</p>
+            <p>{STR.requirements}</p>
             <ul>
-              <li>Формат: десятичные градусы (DD).</li>
-              <li>Точность: ровно 2 знака после запятой.</li>
-              <li>Пример: 55.75, 37.61</li>
+              <li>{STR.reqFormat}</li>
+              <li>{STR.reqPrecision}</li>
+              <li>{STR.reqExample}</li>
             </ul>
           </article>
         )}
 
         {!isSuccess && isFrequencyAligned ? (
           <form className="coords-form" onSubmit={handleSubmit}>
-            <h2>Проверка координат</h2>
+            <h2>{STR.coordsCheck}</h2>
             <div className="inputs">
               <label>
-                <span>Широта (Lat)</span>
+                <span>{STR.lat}</span>
                 <input
                   type="text"
-                  placeholder={isSignalLocked ? '00.00' : 'Нет сигнала'}
+                  placeholder={isSignalLocked ? '00.00' : STR.noSignalShort}
                   value={latInput}
                   disabled={!isSignalLocked}
                   onChange={(event) => setLatInput(event.target.value)}
                 />
               </label>
               <label>
-                <span>Долгота (Lon)</span>
+                <span>{STR.lon}</span>
                 <input
                   type="text"
-                  placeholder={isSignalLocked ? '00.00' : 'Нет сигнала'}
+                  placeholder={isSignalLocked ? '00.00' : STR.noSignalShort}
                   value={lonInput}
                   disabled={!isSignalLocked}
                   onChange={(event) => setLonInput(event.target.value)}
@@ -408,7 +630,7 @@ function App() {
               </label>
             </div>
             <button type="submit" disabled={!isSignalLocked}>
-              Отправить координаты
+              {STR.submitCoords}
             </button>
             {message && <p className="message">{message}</p>}
           </form>
@@ -417,14 +639,14 @@ function App() {
       {isSuccess && (
         <div className="code-modal-backdrop" role="dialog" aria-modal="true">
           <section className="code-modal">
-            <h2>Координаты подтверждены</h2>
-            <p>Ключ доступа:</p>
+            <h2>{STR.coordsConfirmed}</h2>
+            <p>{STR.accessKey}</p>
             <p className="key">{ACCESS_KEY}</p>
             <p className="modal-hint">
-              Окно закроется через {secondsLeft} сек.
+              {STR.modalCloseIn} {secondsLeft} {STR.seconds}
             </p>
             <button type="button" onClick={resetRound}>
-              Закрыть
+              {STR.close}
             </button>
           </section>
         </div>

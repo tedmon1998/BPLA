@@ -84,6 +84,19 @@ h1 {
 
 .signal-stage h1 {
   margin-bottom: 0;
+  transition:
+    opacity 120ms ease,
+    filter 120ms ease;
+}
+
+.signal-stage:not(.signal-stage-locked) .stage-content {
+  filter: blur(calc(var(--noise-level, 0) * 0.045px));
+  opacity: calc(1 - var(--noise-level, 0) * 0.0035);
+}
+
+.signal-stage-locked .stage-content {
+  filter: none;
+  opacity: 1;
 }
 
 .blocked-task,
@@ -107,22 +120,42 @@ h1 {
   inset: 0;
   z-index: 1;
   pointer-events: none;
+  opacity: var(--noise-opacity, 0.5);
+  transition: opacity 90ms linear;
+}
+
+.noise-layer-primary {
   background-image:
     repeating-linear-gradient(
       0deg,
-      rgba(255, 255, 255, 0.28) 0,
-      rgba(255, 255, 255, 0.28) 2px,
-      rgba(30, 30, 30, 0.28) 2px,
-      rgba(30, 30, 30, 0.28) 4px
+      rgba(255, 255, 255, 0.34) 0,
+      rgba(255, 255, 255, 0.34) 2px,
+      rgba(30, 30, 30, 0.34) 2px,
+      rgba(30, 30, 30, 0.34) 4px
     ),
     repeating-linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.12) 0,
-      rgba(255, 255, 255, 0.12) 1px,
-      rgba(0, 0, 0, 0.12) 1px,
-      rgba(0, 0, 0, 0.12) 2px
+      rgba(255, 255, 255, 0.16) 0,
+      rgba(255, 255, 255, 0.16) 1px,
+      rgba(0, 0, 0, 0.16) 1px,
+      rgba(0, 0, 0, 0.16) 2px
     );
-  animation: noiseShift 0.2s steps(8) infinite;
+  animation: noiseShift var(--noise-speed, 0.2s) steps(8) infinite;
+}
+
+.noise-layer-static {
+  background-image: radial-gradient(
+    circle at 20% 30%,
+    rgba(255, 255, 255, 0.18) 0,
+    transparent 42%
+  );
+  mix-blend-mode: screen;
+  animation: staticFlicker var(--noise-speed, 0.2s) steps(4) infinite;
+}
+
+.signal-stage-locked .noise-layer {
+  opacity: 0;
+  animation: none;
 }
 
 @keyframes noiseShift {
@@ -131,6 +164,16 @@ h1 {
   }
   to {
     transform: translate(8px, -8px);
+  }
+}
+
+@keyframes staticFlicker {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-6px, 4px) scale(1.02);
   }
 }
 
@@ -193,6 +236,7 @@ h1 {
 
 .controls,
 .signal-meter,
+.tuning-hints,
 .coords-form,
 .success {
   background: rgba(7, 17, 30, 0.75);
@@ -445,6 +489,73 @@ h1 {
   transition: width 260ms ease;
 }
 
+.tuning-hints-header {
+  margin-bottom: 10px;
+  font-size: 0.82rem;
+  letter-spacing: 0.8px;
+  font-weight: 700;
+  color: #9dc8e8;
+}
+
+.tuning-hints-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.tuning-hint {
+  border-radius: 8px;
+  border: 1px solid rgba(133, 196, 255, 0.28);
+  background: rgba(12, 24, 40, 0.65);
+  padding: 8px 10px;
+  display: grid;
+  gap: 4px;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.tuning-hint-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.9px;
+  font-weight: 700;
+  color: #8eb6d4;
+}
+
+.tuning-hint-text {
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.tuning-hint-ok {
+  border-color: rgba(103, 240, 161, 0.45);
+  background: rgba(34, 96, 64, 0.28);
+}
+
+.tuning-hint-ok .tuning-hint-text {
+  color: #8bffc4;
+}
+
+.tuning-hint-warn {
+  border-color: rgba(255, 214, 102, 0.55);
+  background: rgba(120, 88, 20, 0.24);
+}
+
+.tuning-hint-warn .tuning-hint-text {
+  color: #ffd98a;
+}
+
+.tuning-hint-bad {
+  border-color: rgba(255, 120, 120, 0.55);
+  background: rgba(110, 30, 30, 0.24);
+}
+
+.tuning-hint-bad .tuning-hint-text {
+  color: #ff9f9f;
+}
+
 .inputs {
   display: grid;
   gap: 12px;
@@ -563,5 +674,9 @@ button:disabled {
   .session-bar {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .tuning-hints-grid {
+    grid-template-columns: 1fr;
   }
 }
